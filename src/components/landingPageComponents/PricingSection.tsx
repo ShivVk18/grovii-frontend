@@ -1,123 +1,182 @@
 'use client'
+
 import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Check } from 'lucide-react'
+import { Check, Flame, Sparkles, Zap } from 'lucide-react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { features } from 'process'
 
 const plans = [
   {
     name: 'Starter',
     price: 'Free',
-    description: 'Perfect for trying out Grovii’s AI storyboard tools.',
+    priceNote: 'forever',
+    description: "Perfect for trying out Grovii's AI storyboard tools.",
     features: [
-      '3 Storyboard generations/day',
-      'Basic AI templates',
+      '3 Storyboard generations / day',
+      'Basic AI scene templates',
       'Community support',
+      '9:16 canvas workspace',
     ],
-    buttonText: 'Get Started',
+    cta: 'Get Started Free',
+    href: '/dashboard',
     highlight: false,
+    icon: <Sparkles className="w-5 h-5" />,
   },
   {
     name: 'Creator',
-    price: '$9/mo',
-    description: 'Ideal for creators who post regularly.',
+    price: '$9',
+    priceNote: '/ month',
+    description: 'Ideal for creators who post regularly and want full AI power.',
     features: [
-      'Unlimited storyboards',
-      'Custom styles & tones',
-      'Access to trending audio insights',
-      'Priority AI speed',
+      'Unlimited storyboard generations',
+      'Custom styles & tone presets',
+      'Trending audio insights',
+      'Priority AI generation speed',
+      'Export scene scripts as PDF',
     ],
-    buttonText: 'Join Creator Plan',
+    cta: 'Join Creator Plan',
+    href: '/dashboard',
     highlight: true,
+    icon: <Flame className="w-5 h-5" />,
   },
   {
     name: 'Pro Studio',
-    price: '$19/mo',
-    description: 'For professional creators and small teams.',
+    price: '$19',
+    priceNote: '/ month',
+    description: 'For professional creators, agencies, and small teams.',
     features: [
+      'Everything in Creator',
       'Team collaboration tools',
-      'Export HD visuals',
-      'Access to AI trend marketplace',
-      'Early access to beta features',
+      'Export HD visual assets',
+      'AI trend marketplace access',
+      'Early beta feature access',
     ],
-    buttonText: 'Upgrade to Pro',
+    cta: 'Upgrade to Pro',
+    href: '/dashboard',
     highlight: false,
+    icon: <Zap className="w-5 h-5" />,
   },
 ]
 
 const PricingSection = () => {
   return (
-    <section className="w-full bg-gradient-to-b from-orange-50 to-white dark:from-background dark:to-muted/30 py-24 px-6 md:px-12 lg:px-20">
-      <div className="container mx-auto text-center space-y-10">
-        {/* Heading */}
-        <div className="space-y-4">
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white">
-            Choose your{' '}
-            <span className="bg-gradient-to-r from-[#8B5E3C] to-[#A47551] bg-clip-text text-transparent">
-              Grovii Plan
-            </span>
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
-            Whether you’re just starting out or creating daily, Grovii grows with you.
-          </p>
-        </div>
+    <section id="pricing" className="w-full py-28 select-none relative overflow-hidden">
 
-        {/* Pricing Cards */}
-        <div className="grid gap-8 md:grid-cols-3 items-stretch">
-          {plans.map((plan, index) => (
-            <Card
-              key={index}
-              className={`flex flex-col justify-between rounded-3xl shadow-xl border ${
+      {/* bg decorations */}
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#8B5E3C]/15 to-transparent" />
+      <div className="absolute top-10 left-1/3 w-[500px] h-[400px] bg-gradient-to-br from-[#F5DFC0]/20 to-transparent rounded-full blur-[100px] pointer-events-none" />
+
+      <div className="container mx-auto px-6 md:px-12 max-w-6xl space-y-16">
+
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.55, ease: 'easeOut' }}
+          className="text-center space-y-4 max-w-2xl mx-auto"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8B5E3C]/8 border border-[#8B5E3C]/15 text-xs font-bold text-[#8B5E3C] mb-2">
+            Simple Pricing
+          </div>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-[#3D2B1F] tracking-tight">
+            Choose your{' '}
+            <span className="brand-gradient-text">Grovii Plan</span>
+          </h2>
+          <p className="text-[#7A5C45]/75 text-base font-medium leading-relaxed">
+            Whether you're just starting out or creating daily, Grovii grows with you.
+          </p>
+        </motion.div>
+
+        {/* Cards */}
+        <div className="grid gap-6 md:grid-cols-3 items-stretch max-w-5xl mx-auto">
+          {plans.map((plan, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: 'easeOut', delay: i * 0.1 }}
+              className={`relative flex flex-col rounded-[28px] border overflow-hidden transition-all duration-500 ${
                 plan.highlight
-                  ? 'border-[#8B5E3C] bg-gradient-to-b from-[#fff9f3] to-[#f8f1e9]'
-                  : 'border-gray-200 bg-white/70'
+                  ? 'border-[#8B5E3C]/40 bg-gradient-to-b from-[#FFF7F0] to-[#FAF1E8] shadow-xl shadow-[#8B5E3C]/12 scale-[1.04] z-10'
+                  : 'border-[#8B5E3C]/10 bg-white/75 backdrop-blur-md shadow-sm hover:shadow-lg hover:-translate-y-1.5'
               }`}
             >
-              <CardHeader>
-                <CardTitle
-                  className={`text-2xl font-semibold ${
-                    plan.highlight
-                      ? 'text-[#5C4033]'
-                      : 'text-gray-800 dark:text-gray-100'
-                  }`}
-                >
-                  {plan.name}
-                </CardTitle>
-                <p className="text-4xl font-extrabold mt-2 text-[#8B5E3C]">
-                  {plan.price}
-                </p>
-                <p className="text-gray-600 dark:text-gray-400 mt-2 text-base">
-                  {plan.description}
-                </p>
-              </CardHeader>
+              {/* Popular badge */}
+              {plan.highlight && (
+                <div className="absolute top-4 right-4 flex items-center gap-1.5 text-[9px] font-extrabold tracking-wider uppercase brand-gradient text-white px-3 py-1.5 rounded-full shadow-md">
+                  <Flame className="h-3 w-3 fill-white" />
+                  Most Popular
+                </div>
+              )}
 
-              <CardContent className="space-y-4 flex-1">
-                <ul className="space-y-3 text-left">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                      <Check className="h-4 w-4 text-[#8B5E3C]" />
-                      {feature}
+              {/* Top accent line for highlighted */}
+              {plan.highlight && (
+                <div className="h-1 w-full brand-gradient" />
+              )}
+
+              <div className="p-7 flex flex-col flex-1 gap-6">
+                {/* Plan info */}
+                <div className="space-y-3">
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
+                    plan.highlight ? 'brand-gradient text-white shadow-md' : 'bg-[#8B5E3C]/8 text-[#8B5E3C]'
+                  }`}>
+                    {plan.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-extrabold text-[#3D2B1F]">{plan.name}</h3>
+                    <p className="text-[#7A5C45]/70 text-xs font-medium mt-1 leading-relaxed">{plan.description}</p>
+                  </div>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-4xl font-black text-[#8B5E3C] tracking-tight">{plan.price}</span>
+                    <span className="text-sm text-[#8B5E3C]/60 font-semibold">{plan.priceNote}</span>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="h-px bg-[#8B5E3C]/8" />
+
+                {/* Features */}
+                <ul className="space-y-3 flex-1">
+                  {plan.features.map((feat, fi) => (
+                    <li key={fi} className="flex items-start gap-3 text-sm text-[#5C4033]/80 font-medium">
+                      <div className="w-5 h-5 rounded-full bg-[#8B5E3C]/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <Check className="h-3 w-3 text-[#8B5E3C] stroke-[3]" />
+                      </div>
+                      {feat}
                     </li>
                   ))}
                 </ul>
 
-                <div className="pt-6">
-                  <Button
-                    variant={plan.highlight ? 'brown' : 'outline'}
-                    size="lg"
-                    className={`w-full rounded-xl font-medium ${
-                      plan.highlight
-                        ? 'bg-gradient-to-r from-[#8B5E3C] to-[#A47551] text-white shadow-lg hover:opacity-90'
-                        : 'border-[#8B5E3C] text-[#8B5E3C] hover:bg-orange-50'
-                    }`}
-                  >
-                    {plan.buttonText}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                {/* CTA */}
+                <Button
+                  asChild
+                  className={`w-full rounded-full py-6 font-extrabold text-sm transition-all duration-300 border-0 ${
+                    plan.highlight
+                      ? 'brand-gradient text-white shadow-lg hover:shadow-xl hover:scale-[1.02]'
+                      : 'bg-white border border-[#8B5E3C]/25 text-[#8B5E3C] hover:bg-[#8B5E3C]/5 hover:border-[#8B5E3C]/40'
+                  }`}
+                >
+                  <Link href={plan.href}>{plan.cta}</Link>
+                </Button>
+              </div>
+            </motion.div>
           ))}
         </div>
+
+        {/* Bottom trust note */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-center text-xs font-semibold text-[#7A5C45]/60"
+        >
+          No credit card required · Cancel anytime · 14-day free trial on paid plans
+        </motion.p>
       </div>
     </section>
   )

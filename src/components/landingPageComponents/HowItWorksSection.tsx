@@ -1,87 +1,111 @@
 'use client'
+
 import React from 'react'
 import { Lightbulb, Cog, Clapperboard } from 'lucide-react'
-import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card'
+import { motion } from 'framer-motion'
 
 const steps = [
   {
-    icon: <Lightbulb className="w-8 h-8 text-orange-400" />,
+    icon: <Lightbulb className="w-6 h-6 text-[#8B5E3C]" />,
+    number: '01',
     title: 'Type your idea',
-    desc: "Describe your concept — short or detailed, we'll understand it.",
+    desc: "Describe your concept — short or detailed. Our AI understands context, tone, and your target audience instantly.",
+    badge: 'Input',
   },
   {
-    icon: <Cog className="w-8 h-8 text-rose-400" />,
+    icon: <Cog className="w-6 h-6 text-[#8B5E3C]" />,
+    number: '02',
     title: 'AI generates scenes',
-    desc: 'AI converts your idea into storyboard-style scenes with camera angles.',
+    desc: 'AI converts your idea into cinematic storyboard scenes, complete with camera angles, script, and timing cues.',
+    badge: 'Generate',
   },
   {
-    icon: <Clapperboard className="w-8 h-8 text-amber-400" />,
+    icon: <Clapperboard className="w-6 h-6 text-[#8B5E3C]" />,
+    number: '03',
     title: 'You create',
-    desc: 'Use AI-powered ideas to shoot, edit, and bring your vision to life.',
+    desc: 'Use AI-powered storyboards to shoot, edit, and bring your vision to life — faster than ever before.',
+    badge: 'Create',
   },
 ]
 
 const HowItWorksSection = () => {
   return (
-    <section className="w-full bg-gradient-to-b from-neutral-50 to-orange-50/30 dark:from-background dark:to-muted/30 py-24 flex justify-center">
-      <div className="container mx-auto flex flex-col items-center justify-center px-6 md:px-12 lg:px-20">
-        
-        {/* Modern Container with Glass Effect */}
-        <div className="w-full bg-gradient-to-br from-[#5C4033]/95 via-[#6B4423]/95 to-[#8B5E3C]/95 rounded-3xl p-12 shadow-2xl relative overflow-hidden backdrop-blur-xl">
-          
-          {/* Animated gradient overlay */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.1),transparent_50%)] pointer-events-none"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,152,0,0.08),transparent_50%)] pointer-events-none"></div>
-          
-          {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-orange-400/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-rose-400/10 rounded-full blur-3xl"></div>
-          
-          {/* Heading */}
-          <h2 className="text-5xl md:text-6xl font-bold text-center mb-6 text-white relative z-10 tracking-tight">
-            How It Works
-          </h2>
-          <p className="text-center text-orange-200/80 text-lg mb-16 relative z-10 max-w-2xl mx-auto">
-            Transform your creative vision into reality in three simple steps
-          </p>
-          
-          {/* Steps Container */}
-          <div className="relative flex flex-col md:flex-row items-stretch justify-center gap-8 z-10">
-            
-            {/* Connector line with gradient */}
-            <div className="hidden md:block absolute top-[120px] left-[15%] right-[15%] h-[2px] bg-gradient-to-r from-transparent via-orange-400/40 to-transparent"></div>
-            
-            {steps.map((step, index) => (
-              <div key={index} className="relative group flex-1 max-w-xs">
-                {/* Step number badge */}
-                <div className="absolute -top-4 -left-4 w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-rose-400 flex items-center justify-center text-white font-bold text-sm shadow-lg z-20 group-hover:scale-110 transition-transform duration-300">
-                  {index + 1}
-                </div>
-                
-                <Card className="h-full bg-[#2A1810]/80 backdrop-blur-md border-2 border-orange-300/20 text-white shadow-xl hover:shadow-2xl hover:border-orange-300/40 transition-all duration-500 group-hover:-translate-y-2 relative overflow-hidden">
-                  {/* Card gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  
-                  <CardHeader className="flex flex-col items-center justify-center space-y-4 pt-8 relative z-10">
-                    <div className="flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-[#8B5E3C]/50 to-[#A47551]/50 backdrop-blur-sm shadow-lg border border-orange-300/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                      {step.icon}
-                    </div>
-                    <CardTitle className="text-xl font-bold text-orange-100 text-center group-hover:text-white transition-colors duration-300">
-                      {step.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pb-8 relative z-10">
-                    <CardDescription className="text-center text-orange-200/70 text-base leading-relaxed group-hover:text-orange-100/90 transition-colors duration-300">
-                      {step.desc}
-                    </CardDescription>
-                  </CardContent>
-                  
-                  {/* Bottom accent line */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-                </Card>
-              </div>
-            ))}
+    <section id="how-it-works" className="w-full py-28 select-none relative overflow-hidden">
+
+      {/* bg decoration */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(245,223,192,0.25),transparent_60%)] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#8B5E3C]/5 rounded-full blur-[80px] pointer-events-none" />
+
+      <div className="container mx-auto px-6 md:px-12 max-w-6xl space-y-20">
+
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.55, ease: 'easeOut' }}
+          className="text-center space-y-4 max-w-2xl mx-auto"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8B5E3C]/8 border border-[#8B5E3C]/15 text-xs font-bold text-[#8B5E3C] mb-2">
+            Simple Process
           </div>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-[#3D2B1F] tracking-tight">
+            How It{' '}
+            <span className="brand-gradient-text">Works</span>
+          </h2>
+          <p className="text-[#7A5C45]/75 text-base font-medium leading-relaxed">
+            Transform your creative vision into reality in three intentional steps.
+          </p>
+        </motion.div>
+
+        {/* Steps */}
+        <div className="relative grid md:grid-cols-3 gap-6 md:gap-8 items-stretch z-10">
+
+          {/* Connector line */}
+          <div className="hidden md:block absolute top-[72px] left-[18%] right-[18%] h-px bg-gradient-to-r from-transparent via-[#8B5E3C]/20 to-transparent pointer-events-none" />
+
+          {steps.map((step, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: 'easeOut', delay: index * 0.15 }}
+              className="group relative"
+            >
+              {/* Step number badge */}
+              <div className="absolute -top-4 left-6 w-9 h-9 rounded-full brand-gradient flex items-center justify-center text-white text-xs font-black shadow-lg z-20 group-hover:scale-110 transition-transform duration-300">
+                {index + 1}
+              </div>
+
+              <div className="h-full bg-white/75 backdrop-blur-md border border-[#8B5E3C]/10 rounded-[24px] p-7 pt-8 shadow-sm hover:shadow-lg hover:border-[#8B5E3C]/25 hover:-translate-y-2 transition-all duration-500 relative overflow-hidden flex flex-col gap-4 text-left">
+
+                {/* card bg glow */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,94,60,0.04),transparent_60%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                <div className="flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-[#FAF1E8] border border-[#8B5E3C]/12 flex items-center justify-center shadow-sm group-hover:scale-105 group-hover:rotate-3 transition-all duration-300">
+                    {step.icon}
+                  </div>
+                  <span className="text-[10px] font-extrabold text-[#8B5E3C]/60 bg-[#8B5E3C]/8 px-3 py-1 rounded-full uppercase tracking-wider">
+                    {step.badge}
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-lg font-extrabold text-[#3D2B1F] tracking-tight group-hover:text-[#8B5E3C] transition-colors duration-300">
+                    {step.title}
+                  </h3>
+                  <p className="text-[#7A5C45]/75 text-sm leading-relaxed font-medium">
+                    {step.desc}
+                  </p>
+                </div>
+
+                {/* Bottom hover bar */}
+                <div className="absolute bottom-0 left-0 right-0 h-[3px] brand-gradient transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left rounded-b-[24px]" />
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

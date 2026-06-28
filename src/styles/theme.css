@@ -1,0 +1,132 @@
+/* src/styles/theme.css */
+
+/* 
+  GROVII GLOBAL DESIGN SYSTEM 
+  Warm brand palette — #8B5E3C, #A47551, #FAF7F2
+  Consistent across Landing Page + Dashboard App.
+*/
+
+:root {
+  /* ── Brand Colors (Light Mode) ─────────────────── */
+  --background: oklch(0.975 0.008 60);         /* Warm off-white #FAF7F2 */
+  --foreground: oklch(0.22 0.028 40);           /* Deep warm brown-black */
+
+  --card: oklch(1 0 0);                         /* Pure white cards */
+  --card-foreground: oklch(0.22 0.028 40);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.028 40);
+
+  --primary: oklch(0.48 0.08 55);               /* #8B5E3C brand brown */
+  --primary-foreground: oklch(0.98 0 0);
+
+  --secondary: oklch(0.95 0.018 70);            /* Warm cream #FAF1E8 */
+  --secondary-foreground: oklch(0.48 0.08 55);
+
+  --muted: oklch(0.93 0.012 60);
+  --muted-foreground: oklch(0.52 0.02 45);
+
+  --accent: oklch(0.95 0.018 70);
+  --accent-foreground: oklch(0.48 0.08 55);
+
+  --destructive: oklch(0.62 0.22 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --border: oklch(0.88 0.016 55);               /* Warm light border */
+  --input: oklch(0.88 0.016 55);
+  --ring: oklch(0.48 0.08 55);
+
+  --radius: 0.75rem;
+
+  /* ── App Shell ────────────────────────────────── */
+  --dock-bg: rgba(255, 250, 245, 0.75);
+  --dock-border: rgba(139, 94, 60, 0.12);
+  --header-bg: rgba(255, 250, 245, 0.88);
+}
+
+.dark {
+  /* ── Brand Colors (Dark Mode) ─────────────────── */
+  --background: oklch(0.14 0.018 40);           /* Deep warm dark */
+  --foreground: oklch(0.96 0.008 60);
+
+  --card: oklch(0.18 0.018 40);
+  --card-foreground: oklch(0.96 0.008 60);
+
+  --popover: oklch(0.18 0.018 40);
+  --popover-foreground: oklch(0.96 0.008 60);
+
+  --primary: oklch(0.62 0.1 55);                /* Lighter brand brown for dark */
+  --primary-foreground: oklch(0.14 0.018 40);
+
+  --secondary: oklch(0.22 0.02 45);
+  --secondary-foreground: oklch(0.96 0.008 60);
+
+  --muted: oklch(0.22 0.02 45);
+  --muted-foreground: oklch(0.60 0.018 50);
+
+  --accent: oklch(0.25 0.022 45);
+  --accent-foreground: oklch(0.96 0.008 60);
+
+  --destructive: oklch(0.45 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --border: oklch(0.26 0.022 45);
+  --input: oklch(0.26 0.022 45);
+  --ring: oklch(0.62 0.1 55);
+
+  /* ── App Shell ────────────────────────────────── */
+  --dock-bg: rgba(28, 22, 18, 0.72);
+  --dock-border: rgba(255, 255, 255, 0.08);
+  --header-bg: rgba(22, 18, 14, 0.82);
+}
+
+/* ── Base Styles ──────────────────────────────── */
+* {
+  border-color: var(--color-border, hsl(26 20% 85%));
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar (Linear style) ─────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: oklch(0.72 0.04 55 / 0.4);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.60 0.06 55 / 0.6);
+}
+
+/* ── Glass Utility ────────────────────────────── */
+.glass-panel {
+  background: oklch(1 0 0 / 0.75);
+  backdrop-filter: blur(18px) saturate(1.8);
+  -webkit-backdrop-filter: blur(18px) saturate(1.8);
+  border: 1px solid oklch(0.88 0.016 55 / 0.8);
+  box-shadow: 0 4px 24px -2px oklch(0.48 0.08 55 / 0.06), 0 1px 4px oklch(0 0 0 / 0.04);
+}
+
+.dark .glass-panel {
+  background: oklch(0.18 0.018 40 / 0.72);
+  border: 1px solid oklch(0.26 0.022 45 / 0.8);
+  box-shadow: 0 4px 24px -2px oklch(0 0 0 / 0.25);
+}
+
+/* ── Brand Gradient Utility ───────────────────── */
+.brand-gradient {
+  background: linear-gradient(135deg, #8B5E3C 0%, #A47551 60%, #BF8E6A 100%);
+}
+
+.brand-gradient-text {
+  background: linear-gradient(135deg, #8B5E3C, #A47551);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
