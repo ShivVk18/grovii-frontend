@@ -350,11 +350,11 @@ export default function InteractiveDemoSection() {
                     <span className="text-[10px] font-bold text-muted-foreground uppercase">Audio Mood Match</span>
                     <div className="p-3.5 rounded-xl bg-card border border-border space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="font-bold text-foreground">Lo-Fi Deep Focus</span>
+                        <span className="font-bold text-foreground">Bollywood Lo-Fi & Chill Beats</span>
                         <Badge className="bg-emerald-500/10 text-emerald-500 text-[9px]">98% Match</Badge>
                       </div>
                       <p className="text-muted-foreground text-[11px]">
-                        Upbeat acoustic pulse with ambient rain background.
+                        Smooth acoustic guitar & Bollywood lofi melody with ambient focus pulse.
                       </p>
                     </div>
                   </div>

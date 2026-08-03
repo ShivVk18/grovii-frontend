@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { HiClock as Clock, HiSparkles as Sparkles, HiArrowRight as ArrowRight, HiCheckCircle as CheckCircle2 } from "react-icons/hi2"
+import { HiClock as Clock, HiSparkles as Sparkles, HiArrowRight as ArrowRight, HiCheckCircle as CheckCircle2, HiCurrencyRupee as Rupee } from "react-icons/hi2"
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import { toast } from 'sonner'
@@ -15,7 +15,7 @@ export default function PricingSection() {
     e.preventDefault()
     if (!email) return
     setSubscribed(true)
-    toast.success("You've been added to the VIP subscription early access list!")
+    toast.success("Shukriya! You've been added to the VIP early access list for Indian Creators!")
   }
 
   return (
@@ -35,37 +35,46 @@ export default function PricingSection() {
 
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8B5E3C] text-white text-xs font-bold shadow-md">
-            <Clock className="h-4 w-4 animate-spin" /> Subscriptions Coming Soon
+            <Clock className="h-4 w-4 animate-spin" /> Subscriptions Launching Soon in India (₹ INR & UPI)
           </div>
 
           <div className="space-y-3 max-w-2xl mx-auto">
             <h2 className="text-3xl sm:text-5xl font-extrabold text-[#3D2B1F] tracking-tight">
-              Paid Tiers & Automated Billing Launching Soon
+              Affordable Pricing for Indian Creators
             </h2>
             <p className="text-[#5C4033] text-base leading-relaxed">
-              We are finalizing our Stripe billing integration. In the meantime, all creators get <strong className="text-[#8B5E3C]">100% free unlimited access</strong> to the Grovii Studio Workspace.
+              We are integrating native <strong>UPI, Paytm, PhonePe, Google Pay & RuPay</strong> payments starting at just <strong className="text-[#8B5E3C]">₹999 / month</strong>. Currently, all creators get <strong className="text-[#8B5E3C]">100% free unlimited studio workspace access</strong>.
             </p>
+          </div>
+
+          {/* Supported Indian Payment Gateways Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
+            {['UPI AutoPay', 'Paytm', 'PhonePe', 'Google Pay', 'RuPay Cards', 'NetBanking'].map((method, idx) => (
+              <span key={idx} className="text-[11px] font-extrabold px-3 py-1 rounded-full bg-[#FFF7F0] text-[#8B5E3C] border border-[#8B5E3C]/20 shadow-sm">
+                ✓ {method}
+              </span>
+            ))}
           </div>
 
           {/* Benefits Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left pt-2">
             <div className="p-4 rounded-2xl bg-[#FFF7F0] border border-[#8B5E3C]/15 space-y-1">
               <span className="text-xs font-bold text-[#8B5E3C] flex items-center gap-1.5">
-                <CheckCircle2 className="h-4 w-4" /> Free Studio Access
+                <CheckCircle2 className="h-4 w-4" /> 100% Free Studio Access
               </span>
               <p className="text-[11px] text-[#5C4033]/80">Create unlimited storyboards right now with zero cost.</p>
             </div>
             <div className="p-4 rounded-2xl bg-[#FFF7F0] border border-[#8B5E3C]/15 space-y-1">
               <span className="text-xs font-bold text-[#8B5E3C] flex items-center gap-1.5">
-                <Sparkles className="h-4 w-4" /> VIP Launch Discount
+                <Sparkles className="h-4 w-4" /> 50% Launch Discount
               </span>
-              <p className="text-[11px] text-[#5C4033]/80">Get 50% off Pro Studio tiers when paid billing opens.</p>
+              <p className="text-[11px] text-[#5C4033]/80">Get ₹499/mo intro rates when UPI subscriptions open.</p>
             </div>
             <div className="p-4 rounded-2xl bg-[#FFF7F0] border border-[#8B5E3C]/15 space-y-1">
               <span className="text-xs font-bold text-[#8B5E3C] flex items-center gap-1.5">
-                <Clock className="h-4 w-4" /> Early Access
+                <Clock className="h-4 w-4" /> Hinglish & Regional Support
               </span>
-              <p className="text-[11px] text-[#5C4033]/80">Be the first to unlock priority generation channels.</p>
+              <p className="text-[11px] text-[#5C4033]/80">Full support for Hinglish, Hindi, Tamil, Telugu & Marathi.</p>
             </div>
           </div>
 
@@ -77,7 +86,7 @@ export default function PricingSection() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email for early access..."
+                  placeholder="Enter your email or WhatsApp number..."
                   required
                   className="flex-1 px-4 py-3.5 rounded-full border border-[#8B5E3C]/30 bg-white text-xs font-medium text-[#3D2B1F] placeholder:text-[#5C4033]/50 focus:outline-none focus:ring-2 focus:ring-[#8B5E3C]"
                 />
@@ -91,7 +100,7 @@ export default function PricingSection() {
               </form>
             ) : (
               <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-xs font-bold text-emerald-800">
-                ✓ You're on the early access notification list!
+                ✓ Shukriya! You're on the early access notification list!
               </div>
             )}
 

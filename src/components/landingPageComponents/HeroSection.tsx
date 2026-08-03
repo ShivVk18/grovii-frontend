@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Button } from '../ui/button'
-import { HiArrowRight as ArrowRight, HiFilm as Film, HiCheckCircle as CheckCircle2, HiSparkles as Sparkles, HiSquare3Stack3D as Layers, HiAdjustmentsHorizontal as Sliders, HiMusicalNote as Music, HiDocumentText as FileText } from "react-icons/hi2"
+import { HiArrowRight as ArrowRight, HiFilm as Film, HiCheckCircle as CheckCircle2, HiSparkles as Sparkles, HiSquare3Stack3D as Layers, HiAdjustmentsHorizontal as Sliders, HiMusicalNote as Music, HiDocumentText as FileText, HiGlobeAsiaAustralia as Globe } from "react-icons/hi2"
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Badge } from '../ui/badge'
@@ -33,13 +33,16 @@ export default function HeroSection() {
           animate="show"
           className="flex flex-col items-center gap-8 w-full max-w-4xl"
         >
-          {/* Badge */}
-          <motion.div variants={item}>
+          {/* Badges */}
+          <motion.div variants={item} className="flex flex-wrap items-center justify-center gap-2">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F5DFC0]/50 border border-[#8B5E3C]/20 text-xs font-semibold text-[#8B5E3C] shadow-sm">
               <span className="w-2 h-2 rounded-full bg-[#8B5E3C] animate-pulse inline-block" />
-              The Creative Studio for Short-Form Content
+              Built for Global & Indian Content Creators
               <span className="text-[#8B5E3C]/40">•</span>
-              <span className="text-[#3D2B1F] font-bold">Reels, TikToks & Shorts</span>
+              <span className="text-[#3D2B1F] font-bold">Reels, Shorts & TikTok</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF7F0] border border-[#8B5E3C]/20 text-[11px] font-bold text-[#3D2B1F]">
+              <Music className="h-3.5 w-3.5 text-[#8B5E3C]" /> Indian Classical & Lofi Audio Vibes
             </div>
           </motion.div>
 
@@ -48,7 +51,7 @@ export default function HeroSection() {
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[#3D2B1F] leading-[1.08]">
               Turn One Idea Into A <br className="hidden sm:inline" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B5E3C] via-[#A0704C] to-[#5C4033]">
-                Complete Video Plan
+                Complete Shoot Plan
               </span>
             </h1>
           </motion.div>
@@ -56,8 +59,8 @@ export default function HeroSection() {
           {/* Subheadline */}
           <motion.div variants={item}>
             <p className="text-base sm:text-lg md:text-xl text-[#5C4033]/90 max-w-2xl font-normal leading-relaxed">
-              Go from a simple sentence to a camera-ready shoot plan in seconds. 
-              Grovii prepares your <span className="text-[#3D2B1F] font-semibold">hooks, scene-by-scene breakdown, voiceover script, camera directions, music ideas,</span> and <span className="text-[#3D2B1F] font-semibold">social posts</span> automatically.
+              Go from a simple English prompt to a camera-ready shoot plan in seconds. 
+              Grovii prepares your <span className="text-[#3D2B1F] font-semibold">viral hooks, 5-scene breakdown, voiceover script, camera angles, Indian Lofi/Sitar vibes,</span> and <span className="text-[#3D2B1F] font-semibold">social posts</span> automatically.
             </p>
           </motion.div>
 
@@ -65,7 +68,7 @@ export default function HeroSection() {
           <motion.div variants={item} className="flex flex-col sm:flex-row items-center gap-4 pt-2 w-full sm:w-auto">
             <Button size="lg" asChild className="rounded-full font-bold text-sm h-13 px-8 shadow-xl bg-gradient-to-r from-[#8B5E3C] to-[#C48B5E] text-white hover:opacity-95 transition-all duration-300 w-full sm:w-auto group">
               <Link href="/dashboard" className="flex items-center justify-center gap-2">
-                Start Studio Workspace
+                Start Studio Workspace Free
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
@@ -94,12 +97,12 @@ export default function HeroSection() {
                 
                 {/* BEFORE */}
                 <div className="md:col-span-5 bg-[#FAF7F2] p-5 rounded-2xl border border-[#8B5E3C]/15 space-y-3">
-                  <span className="text-[10px] font-bold text-[#8B5E3C] uppercase tracking-wider block">Before Grovii</span>
+                  <span className="text-[10px] font-bold text-[#8B5E3C] uppercase tracking-wider block">Before Grovii (Raw Prompt)</span>
                   <div className="p-3 bg-[#FFF7F0] rounded-xl border border-[#8B5E3C]/10 text-xs font-medium text-[#3D2B1F]">
-                    “I want to make a video about morning productivity routines for founders.”
+                    “5 Productive Habits of High-Performing Tech Founders in Bangalore”
                   </div>
                   <div className="text-[11px] text-[#5C4033]/70 italic">
-                    ❌ Unstructured idea, no camera plan, writer’s block.
+                    ❌ Writer’s block, no shot list, unsure how to structure scenes.
                   </div>
                 </div>
 
@@ -112,23 +115,23 @@ export default function HeroSection() {
 
                 {/* AFTER */}
                 <div className="md:col-span-5 bg-[#FAF7F2] p-5 rounded-2xl border border-[#8B5E3C]/30 shadow-md space-y-3">
-                  <span className="text-[10px] font-bold text-[#8B5E3C] uppercase tracking-wider block">After Grovii (Complete Shoot Plan)</span>
+                  <span className="text-[10px] font-bold text-[#8B5E3C] uppercase tracking-wider block">After Grovii (Camera-Ready Plan)</span>
                   <div className="space-y-2 text-xs font-semibold text-[#3D2B1F]">
                     <div className="flex items-center justify-between bg-[#FFF7F0] p-2.5 rounded-xl border border-[#8B5E3C]/10">
-                      <span>✓ 3 Scroll-Stopping Hooks</span>
+                      <span>✓ 3 Scroll-Stopping English Hooks</span>
                       <span className="text-[10px] text-emerald-700 font-bold">Ready</span>
                     </div>
                     <div className="flex items-center justify-between bg-[#FFF7F0] p-2.5 rounded-xl border border-[#8B5E3C]/10">
                       <span>✓ 4 Shot-by-Shot Scene Cards</span>
-                      <span className="text-[10px] text-emerald-700 font-bold">13s Total</span>
+                      <span className="text-[10px] text-emerald-700 font-bold">14s Total</span>
                     </div>
                     <div className="flex items-center justify-between bg-[#FFF7F0] p-2.5 rounded-xl border border-[#8B5E3C]/10">
-                      <span>✓ Camera Movement & Lighting</span>
+                      <span>✓ Camera Movements & Lighting</span>
                       <span className="text-[10px] text-emerald-700 font-bold">Macro/POV</span>
                     </div>
                     <div className="flex items-center justify-between bg-[#FFF7F0] p-2.5 rounded-xl border border-[#8B5E3C]/10">
-                      <span>✓ Dialogue & Multi-Platform Post</span>
-                      <span className="text-[10px] text-emerald-700 font-bold">LinkedIn/X</span>
+                      <span>✓ Indian Fusion Music Cues</span>
+                      <span className="text-[10px] text-emerald-700 font-bold">Sitar Lofi Vibe</span>
                     </div>
                   </div>
                 </div>
