@@ -31,5 +31,15 @@ export const storyboardService = {
     // Note: This endpoint is potentially long-running, consider configuring a higher timeout if needed
     const response = await api.post<GenerateStoryboardResponse>('/storyboards/generate', data);
     return response.data;
+  },
+
+  async getJobs(): Promise<any[]> {
+    const response = await api.get<any[]>('/storyboards/jobs');
+    return response.data;
+  },
+
+  async getJobStatus(jobId: string): Promise<any> {
+    const response = await api.get<any>(`/storyboards/jobs/${jobId}`);
+    return response.data;
   }
 };

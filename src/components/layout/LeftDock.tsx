@@ -5,20 +5,22 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
-  LayoutDashboard, 
-  FolderKanban, 
-  Clapperboard, 
-  LayoutTemplate, 
-  Image as ImageIcon, 
-  LineChart, 
-  Settings
-} from "lucide-react"
+  HiSquares2X2 as LayoutDashboard, 
+  HiFolder as FolderKanban, 
+  HiFilm as Clapperboard, 
+  HiViewColumns as LayoutTemplate, 
+  HiPhoto as ImageIcon, 
+  HiChartBar as LineChart, 
+  HiCog6Tooth as Settings,
+  HiSparkles as Sparkles
+} from "react-icons/hi2"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 const dockItems = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Home", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Studio", href: "/dashboard/create", icon: Clapperboard },
   { name: "Projects", href: "/dashboard/storyboards", icon: FolderKanban },
-  { name: "Storyboard", href: "/dashboard/create", icon: Clapperboard },
+  { name: "AI Jobs", href: "/dashboard/jobs", icon: Sparkles },
   { name: "Templates", href: "/dashboard/templates", icon: LayoutTemplate },
   { name: "Assets", href: "/dashboard/assets", icon: ImageIcon },
   { name: "Analytics", href: "/dashboard/analytics", icon: LineChart },

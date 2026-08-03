@@ -2,25 +2,25 @@
 
 import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
+import { motion, animate } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
-  Search,
-  Plus,
-  Video,
-  FileText,
-  Clock,
-  ArrowRight,
-  TrendingUp,
-  Sparkles,
-  Layers,
-  Smartphone,
-  Zap,
-  MoreVertical,
-  FolderOpen
-} from "lucide-react"
+  HiMagnifyingGlass as Search,
+  HiPlus as Plus,
+  HiVideoCamera as Video,
+  HiDocumentText as FileText,
+  HiClock as Clock,
+  HiArrowRight as ArrowRight,
+  HiArrowTrendingUp as TrendingUp,
+  HiSparkles as Sparkles,
+  HiSquare3Stack3D as Layers,
+  HiDevicePhoneMobile as Smartphone,
+  HiBolt as Zap,
+  HiEllipsisVertical as MoreVertical,
+  HiFolderOpen as FolderOpen
+} from "react-icons/hi2"
 import { useAuth } from "@/contexts/AuthContext"
 import { storyboardService } from "@/services/storyboardService"
 import { Storyboard } from "@/types"
@@ -33,11 +33,32 @@ const container = {
       staggerChildren: 0.1
     }
   }
-}
+} as any
 
 const itemVariant = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+} as any
+
+function AnimatedCounter({ value }: { value: number }) {
+  const ref = React.useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    const node = ref.current
+    if (!node) return
+
+    const controls = animate(0, value, {
+      duration: 1.2,
+      ease: "easeOut",
+      onUpdate(v) {
+        node.textContent = Math.round(v).toString()
+      }
+    })
+
+    return () => controls.stop()
+  }, [value])
+
+  return <span ref={ref}>0</span>
 }
 
 export default function DashboardPage() {
@@ -45,26 +66,37 @@ export default function DashboardPage() {
   const { user } = useAuth()
   const [searchQuery, setSearchQuery] = useState("")
   const [storyboards, setStoryboards] = useState<Storyboard[]>([])
+  const [activeJobsCount, setActiveJobsCount] = useState(0)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchStoryboards = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const data = await storyboardService.getStoryboards()
-        setStoryboards(data)
+        const [storyboardsData, jobsData] = await Promise.all([
+          storyboardService.getStoryboards(),
+          storyboardService.getJobs()
+        ])
+        setStoryboards(storyboardsData)
+        
+        const active = jobsData.filter(j => j.status === 'pending' || j.status === 'processing')
+        setActiveJobsCount(active.length)
       } catch (error) {
-        console.error("Failed to fetch storyboards", error)
+        console.error("Failed to fetch dashboard data", error)
       } finally {
         setLoading(false)
       }
     }
-    fetchStoryboards()
+    fetchDashboardData()
   }, [])
 
   const filteredStoryboards = storyboards.filter(s =>
-    s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.tone.toLowerCase().includes(searchQuery.toLowerCase())
+    (s.title?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+    (s.tone?.toLowerCase() || "").includes(searchQuery.toLowerCase())
   )
+
+  const avgDuration = storyboards.length > 0 
+    ? Math.round(storyboards.reduce((acc, curr) => acc + (curr.duration || 0), 0) / storyboards.length)
+    : 0
 
   return (
     <motion.div 
@@ -85,7 +117,7 @@ export default function DashboardPage() {
               Welcome back, {user?.username || 'Creator'}.
             </h1>
             <p className="text-muted-foreground text-base md:text-lg max-w-xl font-medium leading-relaxed">
-              Design scroll-stopping video scripts, detailed storyboard sequences, and hook layouts in seconds with AI.
+              Turn raw ideas into production-ready shoot plans, camera-directed storyboards, and multi-platform social posts with your AI Director.
             </p>
           </div>
 
@@ -96,7 +128,7 @@ export default function DashboardPage() {
               className="rounded-full shadow-md font-semibold px-6 gap-2"
             >
               <Plus className="h-4 w-4" />
-              New Project
+              Launch Studio Wizard
             </Button>
             <div className="relative w-full sm:w-96 group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
@@ -112,23 +144,29 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* 2. Stats Bento Grid */}
-      <motion.div variants={itemVariant} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <motion.div variants={itemVariant} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Credits Remaining"
+          value={user?.credits !== undefined ? <AnimatedCounter value={user.credits} /> : "0"}
+          subText={user?.plan ? `${user.plan.toUpperCase()} Tier` : "Free Tier"}
+          icon={<Zap className="h-5 w-5 text-amber-500" />}
+        />
+        <StatCard
+          title="Active AI Jobs"
+          value={<AnimatedCounter value={activeJobsCount} />}
+          subText="Jobs processing in background"
+          icon={<Sparkles className="h-5 w-5 text-primary" />}
+        />
         <StatCard
           title="Total Projects"
-          value={storyboards.length.toString()}
-          subText="In your library"
+          value={<AnimatedCounter value={storyboards.length} />}
+          subText="In your creative library"
           icon={<FileText className="h-5 w-5 text-muted-foreground" />}
         />
         <StatCard
-          title="Most Used Tone"
-          value={storyboards.length > 0 ? storyboards[0].tone : "N/A"}
-          subText="Highest conversion rate"
-          icon={<TrendingUp className="h-5 w-5 text-muted-foreground" />}
-        />
-        <StatCard
-          title="Avg Project Length"
-          value={storyboards.length > 0 ? `${Math.round(storyboards.reduce((acc, curr) => acc + curr.duration, 0) / storyboards.length)}s` : "0s"}
-          subText="Perfect for shorts"
+          title="Avg Duration"
+          value={avgDuration > 0 ? <><AnimatedCounter value={avgDuration} />s</> : "0s"}
+          subText="Optimized for short-form"
           icon={<Clock className="h-5 w-5 text-muted-foreground" />}
         />
       </motion.div>
@@ -202,7 +240,7 @@ export default function DashboardPage() {
                 key={item.id}
                 whileHover={{ y: -4 }}
                 className="group glass-panel rounded-3xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col h-72 border border-border"
-                onClick={() => router.push("/dashboard/storyboards")}
+                onClick={() => router.push(`/dashboard/storyboards/${item.id}`)}
               >
                 {/* Visual Thumbnail */}
                 <div className="h-40 bg-secondary/50 p-4 flex flex-col justify-end relative overflow-hidden">
@@ -214,7 +252,7 @@ export default function DashboardPage() {
                   )}
                   
                   <div className="absolute top-4 left-4 bg-background/80 backdrop-blur-md px-2.5 py-1 rounded-md border border-border text-[10px] font-bold text-foreground z-10">
-                    9:16
+                    {item.platform === 'YouTube' ? '16:9' : '9:16'}
                   </div>
                   
                   <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition duration-200 z-10">
@@ -286,7 +324,7 @@ function FormatCard({ title, description, icon, onClick }: { title: string; desc
   )
 }
 
-function StatCard({ title, value, subText, icon }: { title: string; value: string; subText: string; icon: React.ReactNode }) {
+function StatCard({ title, value, subText, icon }: { title: string; value: React.ReactNode; subText: string; icon: React.ReactNode }) {
   return (
     <div className="glass-panel p-6 rounded-3xl relative overflow-hidden group select-none text-left flex flex-col justify-between h-36">
       <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none group-hover:bg-primary/10 transition-colors duration-500"></div>

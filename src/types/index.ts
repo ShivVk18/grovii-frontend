@@ -2,6 +2,9 @@ export interface User {
   id: string;
   email: string;
   username: string;
+  credits?: number;
+  plan?: string;
+  avatar_url?: string;
 }
 
 export interface AuthResponse {
@@ -75,6 +78,7 @@ export interface AIResult {
 }
 
 export interface GenerateStoryboardResponse {
-  storyboard: Storyboard;
-  ai_result: AIResult;
+  job_id: string;
+  storyboard_id: string;
+  status: string;
 }

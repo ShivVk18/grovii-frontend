@@ -63,7 +63,7 @@ export const useStoryboardForm = () => {
         platform: formData.platform,
       });
       
-      const rawAiResult = response.ai_result;
+      const rawAiResult = (response as any).ai_result || {};
 
       // Map backend response scenes back to frontend expected structure
       const mappedScenes = rawAiResult.scenes.map((s: any, index: number) => ({

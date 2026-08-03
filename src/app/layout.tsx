@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import QueryProvider from "@/components/providers/QueryProvider";
+import { Toaster } from "sonner";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -16,8 +18,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Grovii | AI Reel Storyboard Workspace",
-  description: "Turn your ideas into ready-to-shoot Reels in seconds with a beautiful Canva-like workspace.",
+  title: "Grovii | AI Creative Director Studio",
+  description: "Turn one raw idea into a complete production-ready shoot plan: hooks, 5-scene storyboards, camera angles, lighting setup, scripts, music vibes, captions, and social repurposing.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -28,9 +34,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${outfit.variable} ${inter.variable} font-sans antialiased`}>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            {children}
+            <Toaster position="top-right" theme="system" closeButton richColors />
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

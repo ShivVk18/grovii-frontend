@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { LayoutDashboard, PlusCircle, FileText, Settings } from "lucide-react"
+import { HiSquares2X2 as LayoutDashboard, HiPlusCircle as PlusCircle, HiDocumentText as FileText, HiCog6Tooth as Settings } from "react-icons/hi2"
 
 export function AppSidebar() {
   return (

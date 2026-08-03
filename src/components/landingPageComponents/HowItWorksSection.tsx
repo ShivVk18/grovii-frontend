@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Lightbulb, Cog, Clapperboard } from 'lucide-react'
+import { HiLightBulb as Lightbulb, HiCog6Tooth as Cog, HiFilm as Clapperboard } from 'react-icons/hi2'
 import { motion } from 'framer-motion'
 
 const steps = [

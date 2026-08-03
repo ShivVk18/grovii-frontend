@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Flame, Eye, EyeOff, AlertCircle, Check } from "lucide-react";
+import { HiFire as Flame, HiEye as Eye, HiEyeSlash as EyeOff, HiExclamationCircle as AlertCircle, HiCheck as Check } from "react-icons/hi2";
 import { signUpSchema, SignUpValues } from "@/schemas/authSchema";
 import { authService } from "@/services/authService";
 
@@ -70,9 +70,11 @@ export default function SignUpForm() {
           {/* Brand mark */}
           <div className="flex items-center gap-2.5 mb-8 select-none">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl brand-gradient text-white font-extrabold text-base shadow-md group-hover:scale-105 transition-all duration-300">
-                G
-              </div>
+              <img
+                src="/logo.png"
+                alt="Grovii Logo"
+                className="w-9 h-9 rounded-xl object-cover shadow-md border border-[#8B5E3C]/20 group-hover:scale-105 transition-all duration-300"
+              />
               <span className="font-extrabold text-xl text-[#5C4033]">Grovii</span>
               <span className="text-[9px] font-extrabold text-[#8B5E3C] bg-[#8B5E3C]/10 px-2 py-0.5 rounded-full uppercase tracking-wider">AI</span>
             </Link>

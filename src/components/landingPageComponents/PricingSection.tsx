@@ -1,185 +1,115 @@
 'use client'
 
-import React from 'react'
-import { Button } from '@/components/ui/button'
-import { Check, Flame, Sparkles, Zap } from 'lucide-react'
-import Link from 'next/link'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { features } from 'process'
+import { HiClock as Clock, HiSparkles as Sparkles, HiArrowRight as ArrowRight, HiCheckCircle as CheckCircle2 } from "react-icons/hi2"
+import { Button } from '../ui/button'
+import Link from 'next/link'
+import { toast } from 'sonner'
 
-const plans = [
-  {
-    name: 'Starter',
-    price: 'Free',
-    priceNote: 'forever',
-    description: "Perfect for trying out Grovii's AI storyboard tools.",
-    features: [
-      '3 Storyboard generations / day',
-      'Basic AI scene templates',
-      'Community support',
-      '9:16 canvas workspace',
-    ],
-    cta: 'Get Started Free',
-    href: '/dashboard',
-    highlight: false,
-    icon: <Sparkles className="w-5 h-5" />,
-  },
-  {
-    name: 'Creator',
-    price: '$9',
-    priceNote: '/ month',
-    description: 'Ideal for creators who post regularly and want full AI power.',
-    features: [
-      'Unlimited storyboard generations',
-      'Custom styles & tone presets',
-      'Trending audio insights',
-      'Priority AI generation speed',
-      'Export scene scripts as PDF',
-    ],
-    cta: 'Join Creator Plan',
-    href: '/dashboard',
-    highlight: true,
-    icon: <Flame className="w-5 h-5" />,
-  },
-  {
-    name: 'Pro Studio',
-    price: '$19',
-    priceNote: '/ month',
-    description: 'For professional creators, agencies, and small teams.',
-    features: [
-      'Everything in Creator',
-      'Team collaboration tools',
-      'Export HD visual assets',
-      'AI trend marketplace access',
-      'Early beta feature access',
-    ],
-    cta: 'Upgrade to Pro',
-    href: '/dashboard',
-    highlight: false,
-    icon: <Zap className="w-5 h-5" />,
-  },
-]
+export default function PricingSection() {
+  const [email, setEmail] = useState('')
+  const [subscribed, setSubscribed] = useState(false)
 
-const PricingSection = () => {
+  const handleWaitlist = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email) return
+    setSubscribed(true)
+    toast.success("You've been added to the VIP subscription early access list!")
+  }
+
   return (
-    <section id="pricing" className="w-full py-28 select-none relative overflow-hidden">
-
-      {/* bg decorations */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#8B5E3C]/15 to-transparent" />
-      <div className="absolute top-10 left-1/3 w-[500px] h-[400px] bg-gradient-to-br from-[#F5DFC0]/20 to-transparent rounded-full blur-[100px] pointer-events-none" />
-
-      <div className="container mx-auto px-6 md:px-12 max-w-6xl space-y-16">
-
-        {/* Header */}
+    <section id="pricing" className="py-24 relative overflow-hidden border-t border-[#8B5E3C]/20 select-none">
+      <div className="max-w-4xl mx-auto px-6 md:px-12">
+        
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.55, ease: 'easeOut' }}
-          className="text-center space-y-4 max-w-2xl mx-auto"
+          transition={{ duration: 0.5 }}
+          className="rounded-3xl p-8 sm:p-12 border border-[#8B5E3C]/25 bg-gradient-to-br from-[#FFF7F0] via-[#FAF7F2] to-[#FFF7F0] shadow-2xl relative overflow-hidden text-center space-y-8"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8B5E3C]/8 border border-[#8B5E3C]/15 text-xs font-bold text-[#8B5E3C] mb-2">
-            Simple Pricing
+          {/* Ambient Glow */}
+          <div className="absolute -top-32 -right-32 w-80 h-80 bg-[#F5DFC0]/60 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-[#8B5E3C]/10 rounded-full blur-3xl pointer-events-none" />
+
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8B5E3C] text-white text-xs font-bold shadow-md">
+            <Clock className="h-4 w-4 animate-spin" /> Subscriptions Coming Soon
           </div>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-[#3D2B1F] tracking-tight">
-            Choose your{' '}
-            <span className="brand-gradient-text">Grovii Plan</span>
-          </h2>
-          <p className="text-[#7A5C45]/75 text-base font-medium leading-relaxed">
-            Whether you're just starting out or creating daily, Grovii grows with you.
-          </p>
+
+          <div className="space-y-3 max-w-2xl mx-auto">
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-[#3D2B1F] tracking-tight">
+              Paid Tiers & Automated Billing Launching Soon
+            </h2>
+            <p className="text-[#5C4033] text-base leading-relaxed">
+              We are finalizing our Stripe billing integration. In the meantime, all creators get <strong className="text-[#8B5E3C]">100% free unlimited access</strong> to the Grovii Studio Workspace.
+            </p>
+          </div>
+
+          {/* Benefits Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left pt-2">
+            <div className="p-4 rounded-2xl bg-[#FFF7F0] border border-[#8B5E3C]/15 space-y-1">
+              <span className="text-xs font-bold text-[#8B5E3C] flex items-center gap-1.5">
+                <CheckCircle2 className="h-4 w-4" /> Free Studio Access
+              </span>
+              <p className="text-[11px] text-[#5C4033]/80">Create unlimited storyboards right now with zero cost.</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-[#FFF7F0] border border-[#8B5E3C]/15 space-y-1">
+              <span className="text-xs font-bold text-[#8B5E3C] flex items-center gap-1.5">
+                <Sparkles className="h-4 w-4" /> VIP Launch Discount
+              </span>
+              <p className="text-[11px] text-[#5C4033]/80">Get 50% off Pro Studio tiers when paid billing opens.</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-[#FFF7F0] border border-[#8B5E3C]/15 space-y-1">
+              <span className="text-xs font-bold text-[#8B5E3C] flex items-center gap-1.5">
+                <Clock className="h-4 w-4" /> Early Access
+              </span>
+              <p className="text-[11px] text-[#5C4033]/80">Be the first to unlock priority generation channels.</p>
+            </div>
+          </div>
+
+          {/* Notification Form */}
+          <div className="pt-4 max-w-md mx-auto space-y-4">
+            {!subscribed ? (
+              <form onSubmit={handleWaitlist} className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email for early access..."
+                  required
+                  className="flex-1 px-4 py-3.5 rounded-full border border-[#8B5E3C]/30 bg-white text-xs font-medium text-[#3D2B1F] placeholder:text-[#5C4033]/50 focus:outline-none focus:ring-2 focus:ring-[#8B5E3C]"
+                />
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="rounded-full font-bold text-xs px-6 py-3.5 bg-gradient-to-r from-[#8B5E3C] to-[#C48B5E] text-white shadow-md hover:opacity-95"
+                >
+                  Notify Me
+                </Button>
+              </form>
+            ) : (
+              <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-xs font-bold text-emerald-800">
+                ✓ You're on the early access notification list!
+              </div>
+            )}
+
+            <Button
+              asChild
+              variant="link"
+              className="text-xs font-bold text-[#8B5E3C] hover:text-[#3D2B1F]"
+            >
+              <Link href="/dashboard" className="inline-flex items-center gap-1">
+                Start Creating Free in Studio Workspace
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          </div>
+
         </motion.div>
 
-        {/* Cards */}
-        <div className="grid gap-6 md:grid-cols-3 items-stretch max-w-5xl mx-auto">
-          {plans.map((plan, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 32 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, ease: 'easeOut', delay: i * 0.1 }}
-              className={`relative flex flex-col rounded-[28px] border overflow-hidden transition-all duration-500 ${
-                plan.highlight
-                  ? 'border-[#8B5E3C]/40 bg-gradient-to-b from-[#FFF7F0] to-[#FAF1E8] shadow-xl shadow-[#8B5E3C]/12 scale-[1.04] z-10'
-                  : 'border-[#8B5E3C]/10 bg-white/75 backdrop-blur-md shadow-sm hover:shadow-lg hover:-translate-y-1.5'
-              }`}
-            >
-              {/* Popular badge */}
-              {plan.highlight && (
-                <div className="absolute top-4 right-4 flex items-center gap-1.5 text-[9px] font-extrabold tracking-wider uppercase brand-gradient text-white px-3 py-1.5 rounded-full shadow-md">
-                  <Flame className="h-3 w-3 fill-white" />
-                  Most Popular
-                </div>
-              )}
-
-              {/* Top accent line for highlighted */}
-              {plan.highlight && (
-                <div className="h-1 w-full brand-gradient" />
-              )}
-
-              <div className="p-7 flex flex-col flex-1 gap-6">
-                {/* Plan info */}
-                <div className="space-y-3">
-                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${
-                    plan.highlight ? 'brand-gradient text-white shadow-md' : 'bg-[#8B5E3C]/8 text-[#8B5E3C]'
-                  }`}>
-                    {plan.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-extrabold text-[#3D2B1F]">{plan.name}</h3>
-                    <p className="text-[#7A5C45]/70 text-xs font-medium mt-1 leading-relaxed">{plan.description}</p>
-                  </div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-4xl font-black text-[#8B5E3C] tracking-tight">{plan.price}</span>
-                    <span className="text-sm text-[#8B5E3C]/60 font-semibold">{plan.priceNote}</span>
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div className="h-px bg-[#8B5E3C]/8" />
-
-                {/* Features */}
-                <ul className="space-y-3 flex-1">
-                  {plan.features.map((feat, fi) => (
-                    <li key={fi} className="flex items-start gap-3 text-sm text-[#5C4033]/80 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-[#8B5E3C]/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <Check className="h-3 w-3 text-[#8B5E3C] stroke-[3]" />
-                      </div>
-                      {feat}
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA */}
-                <Button
-                  asChild
-                  className={`w-full rounded-full py-6 font-extrabold text-sm transition-all duration-300 border-0 ${
-                    plan.highlight
-                      ? 'brand-gradient text-white shadow-lg hover:shadow-xl hover:scale-[1.02]'
-                      : 'bg-white border border-[#8B5E3C]/25 text-[#8B5E3C] hover:bg-[#8B5E3C]/5 hover:border-[#8B5E3C]/40'
-                  }`}
-                >
-                  <Link href={plan.href}>{plan.cta}</Link>
-                </Button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Bottom trust note */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-center text-xs font-semibold text-[#7A5C45]/60"
-        >
-          No credit card required · Cancel anytime · 14-day free trial on paid plans
-        </motion.p>
       </div>
     </section>
   )
 }
-
-export default PricingSection

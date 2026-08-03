@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Search, Plus, Filter, FileText, Trash2, Edit2, ExternalLink, MoreVertical } from "lucide-react"
+import { HiMagnifyingGlass as Search, HiPlus as Plus, HiFunnel as Filter, HiDocumentText as FileText, HiTrash as Trash2, HiPencilSquare as Edit2, HiArrowTopRightOnSquare as ExternalLink, HiEllipsisVertical as MoreVertical } from "react-icons/hi2"
 import { storyboardService } from "@/services/storyboardService"
 import { Storyboard } from "@/types"
 
@@ -18,12 +18,12 @@ const container = {
       staggerChildren: 0.1
     }
   }
-}
+} as any
 
 const itemVariant = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
-}
+} as any
 
 export default function StoryboardsPage() {
   const router = useRouter()
@@ -158,7 +158,7 @@ export default function StoryboardsPage() {
                   transition={{ duration: 0.2 }}
                   whileHover={{ y: -4 }}
                   className="group glass-panel rounded-3xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col h-72 border border-border"
-                  onClick={() => router.push(`/dashboard/create`)}
+                  onClick={() => router.push(`/dashboard/storyboards/${item.id}`)}
                 >
                   {/* Canvas Cover Preview */}
                   <div className="h-40 bg-secondary/50 p-4 flex flex-col justify-end relative overflow-hidden">

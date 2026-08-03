@@ -2,18 +2,18 @@
 
 import React from "react"
 import { motion } from "framer-motion"
-import { Image as ImageIcon, UploadCloud, FolderOpen } from "lucide-react"
+import { HiPhoto as ImageIcon, HiCloudArrowUp as UploadCloud, HiFolderOpen as FolderOpen } from "react-icons/hi2"
 import { Button } from "@/components/ui/button"
 
 const container = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.1 } }
-}
+} as any
 
 const itemVariant = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
-}
+} as any
 
 export default function AssetsPage() {
   return (

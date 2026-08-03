@@ -1,12 +1,16 @@
 "use client"
 
 import React from "react"
-import { Search, Bell, Sparkles, Moon, Sun, Download, ChevronDown } from "lucide-react"
+import { HiMagnifyingGlass as Search, HiBell as Bell, HiSparkles as Sparkles, HiMoon as Moon, HiSun as Sun, HiArrowDownTray as Download, HiChevronDown as ChevronDown, HiPlus as Plus } from "react-icons/hi2"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { useAuth } from "@/contexts/AuthContext"
+import { useRouter } from "next/navigation"
 
 export function TopHeader() {
+  const { user } = useAuth()
+  const router = useRouter()
   // Mock states for UI purposes
   const [isDark, setIsDark] = React.useState(false)
 
@@ -15,21 +19,27 @@ export function TopHeader() {
     document.documentElement.classList.toggle("dark")
   }
 
+  const credits = user?.credits ?? 0
+  const plan = user?.plan ? `${user.plan.charAt(0).toUpperCase()}${user.plan.slice(1)} Plan` : "Free Plan"
+
   return (
     <header className="sticky top-0 z-40 h-[72px] w-full bg-header-bg backdrop-blur-xl border-b border-border flex items-center justify-between px-8">
       
       {/* Left Area: Workspace Switcher & Status */}
       <div className="flex items-center gap-6">
-        <button className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <button 
+          onClick={() => router.push("/dashboard/settings")}
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        >
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold shadow-sm">
-            G
+            {user?.username?.charAt(0).toUpperCase() || 'G'}
           </div>
           <div className="flex flex-col items-start">
             <div className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
-              Personal Workspace
+              {user?.username || 'Creator'}'s Space
               <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
             </div>
-            <span className="text-[10px] text-muted-foreground font-medium">Free Plan</span>
+            <span className="text-[10px] text-muted-foreground font-medium">{plan}</span>
           </div>
         </button>
 
@@ -63,11 +73,13 @@ export function TopHeader() {
 
       {/* Right Area: Actions */}
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground">
-          <div className="flex items-center gap-1.5 px-2 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 rounded-full h-7 border border-amber-500/20">
-            <Sparkles className="h-3 w-3" />
-            <span>120</span>
-          </div>
+        <Button 
+          variant="ghost" 
+          onClick={() => router.push("/dashboard/settings")}
+          className="rounded-full text-muted-foreground hover:text-foreground h-9 px-3 gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 transition-all duration-200"
+        >
+          <Sparkles className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 animate-pulse" />
+          <span className="text-xs font-bold text-amber-600 dark:text-amber-400">{credits} credits</span>
         </Button>
 
         <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground relative">
@@ -81,13 +93,20 @@ export function TopHeader() {
 
         <div className="h-4 w-[1px] bg-border mx-1" />
 
-        <Button size="sm" className="rounded-full hidden sm:flex h-9 px-4 gap-2 shadow-sm font-semibold">
-          <Download className="h-4 w-4" />
-          Export
+        <Button 
+          onClick={() => router.push("/dashboard/create")}
+          size="sm" 
+          className="rounded-full hidden sm:flex h-9 px-4 gap-2 shadow-sm font-semibold"
+        >
+          <Plus className="h-4 w-4" />
+          New Project
         </Button>
 
-        <button className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 border-2 border-background shadow-sm ml-2 overflow-hidden flex items-center justify-center">
-          <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=transparent" alt="Avatar" className="h-full w-full object-cover" />
+        <button 
+          onClick={() => router.push("/dashboard/settings")}
+          className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 border-2 border-background shadow-sm ml-2 overflow-hidden flex items-center justify-center cursor-pointer transition-transform hover:scale-105"
+        >
+          <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${user?.username || 'Felix'}&backgroundColor=transparent`} alt="Avatar" className="h-full w-full object-cover" />
         </button>
       </div>
 

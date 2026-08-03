@@ -11,25 +11,29 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import {
-  Sparkles,
-  Play,
-  Pause,
-  Plus,
-  Trash2,
-  Download,
-  Share2,
-  Layers,
-  Sliders,
-  Film,
-  ChevronRight,
-  Settings2,
-  Clapperboard,
-  RotateCcw,
-  ZoomIn,
-  ZoomOut
-} from "lucide-react"
-
-import { useStoryboardForm } from "@/hooks/useStoryboardForm"
+  HiSparkles as Sparkles,
+  HiPlay as Play,
+  HiPause as Pause,
+  HiPlus as Plus,
+  HiTrash as Trash2,
+  HiArrowDownTray as Download,
+  HiShare as Share2,
+  HiSquare3Stack3D as Layers,
+  HiAdjustmentsHorizontal as Sliders,
+  HiFilm as Film,
+  HiChevronRight as ChevronRight,
+  HiAdjustmentsVertical as Settings2,
+  HiVideoCamera as Clapperboard,
+  HiArrowPath as RotateCcw,
+  HiMagnifyingGlassPlus as ZoomIn,
+  HiMagnifyingGlassMinus as ZoomOut,
+  HiCheckCircle as CheckCircle2,
+  HiExclamationTriangle as AlertTriangle,
+  HiArrowPath as Loader2
+} from "react-icons/hi2"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+import { storyboardService } from "@/services/storyboardService"
 
 type SceneData = {
   id: number
@@ -44,14 +48,18 @@ type SceneData = {
 }
 
 export default function CreateStoryboardPage() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState<"brief" | "style" | "advanced" | "canvas">("brief")
   const [step, setStep] = useState(1)
   
-  const {
-    submitForm,
-    isSubmitting,
-    data: generatedData,
-  } = useStoryboardForm()
+  // Async Generation States
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [jobId, setJobId] = useState<string | null>(null)
+  const [jobProgress, setJobProgress] = useState(0)
+  const [jobStatus, setJobStatus] = useState<"pending" | "processing" | "completed" | "failed" | null>(null)
+  const [jobStage, setJobStage] = useState("Initializing...")
+  const [jobError, setJobError] = useState<string | null>(null)
+  const [createdStoryboardId, setCreatedStoryboardId] = useState<string | null>(null)
 
   const [idea, setIdea] = useState("")
   const [goal, setGoal] = useState("inspire")
@@ -63,17 +71,92 @@ export default function CreateStoryboardPage() {
   const [generateScript, setGenerateScript] = useState(true)
   const [reference, setReference] = useState("")
 
-  const handleGenerate = () => {
-    submitForm({
-      idea,
-      goal,
-      tone,
-      style: contentStyle,
-      audience,
-      duration: parseInt(duration),
-      platform,
-    })
+  const handleGenerate = async () => {
+    setIsGenerating(true)
+    setJobStatus("pending")
+    setJobProgress(0)
+    setJobError(null)
+    setJobStage("Enqueuing storyboard job...")
+    
+    try {
+      const response = await storyboardService.generateAIStoryboard({
+        idea,
+        goal,
+        tone,
+        style: contentStyle,
+        audience,
+        duration: parseInt(duration),
+        platform,
+      })
+      
+      setJobId(response.job_id)
+      setCreatedStoryboardId(response.storyboard_id)
+      setJobStatus("pending")
+      setJobStage("Job enqueued, starting worker process...")
+      toast.success("Generation started!")
+    } catch (error: any) {
+      console.error("Failed to start generation:", error)
+      setJobStatus("failed")
+      setJobError(error.response?.data?.detail || error.message || "Failed to start generation job.")
+      setIsGenerating(false)
+    }
   }
+
+  // Polling Job Status
+  useEffect(() => {
+    if (!jobId || jobStatus === "completed" || jobStatus === "failed") return
+
+    let intervalId: NodeJS.Timeout
+
+    const checkStatus = async () => {
+      try {
+        const job = await storyboardService.getJobStatus(jobId)
+        
+        setJobStatus(job.status as any)
+        
+        if (job.status === "completed") {
+          setJobProgress(100)
+          setJobStage("Storyboard created successfully!")
+          toast.success("Storyboard created!")
+          
+          // Clean interval and redirect after success check shows
+          clearInterval(intervalId)
+          setTimeout(() => {
+            router.push(`/dashboard/storyboards/${createdStoryboardId}`)
+          }, 1500)
+          
+        } else if (job.status === "failed") {
+          setJobStatus("failed")
+          setJobError(job.error_message || "Generation job failed.")
+          clearInterval(intervalId)
+        } else {
+          // Status is processing or pending
+          const currentProgress = job.progress || 0
+          setJobProgress(currentProgress)
+          
+          // Map progress value to active descriptive stages
+          if (currentProgress < 20) {
+            setJobStage("Generating script hooks...")
+          } else if (currentProgress < 40) {
+            setJobStage("Creating screen layouts & scenes...")
+          } else if (currentProgress < 60) {
+            setJobStage("Writing visual scripts & dialogue...")
+          } else if (currentProgress < 85) {
+            setJobStage("Designing caption variants...")
+          } else {
+            setJobStage("Assembling final storyboard database...")
+          }
+        }
+      } catch (error: any) {
+        console.error("Polling job status error:", error)
+      }
+    }
+
+    checkStatus()
+    intervalId = setInterval(checkStatus, 2000)
+
+    return () => clearInterval(intervalId)
+  }, [jobId, jobStatus, createdStoryboardId, router])
 
   const [scenes, setScenes] = useState<SceneData[]>([])
   const [selectedSceneId, setSelectedSceneId] = useState<number | null>(null)
@@ -81,26 +164,7 @@ export default function CreateStoryboardPage() {
   const [zoom, setZoom] = useState(100)
   const [playingSceneIndex, setPlayingSceneIndex] = useState(0)
 
-  useEffect(() => {
-    if (generatedData?.scenes) {
-      setStep(3)
-      const newScenes: SceneData[] = generatedData.scenes.map((s: any) => ({
-        id: s.number,
-        number: s.number,
-        duration: s.duration,
-        title: s.title,
-        visual: s.visual,
-        cameraAngle: s.cameraAngle,
-        sound: s.sound,
-        dialogue: s.dialogue,
-        scene_image_url: s.scene_image_url
-      }))
-      setScenes(newScenes)
-      if (newScenes.length > 0) {
-        setSelectedSceneId(newScenes[0].id)
-      }
-    }
-  }, [generatedData])
+
 
   useEffect(() => {
     let interval: NodeJS.Timeout
@@ -437,12 +501,12 @@ export default function CreateStoryboardPage() {
           <div className="p-6 border-t border-border bg-background/50 backdrop-blur-md">
             <Button
               onClick={handleGenerate}
-              disabled={!idea || isSubmitting}
+              disabled={!idea || isGenerating}
               className="w-full h-12 rounded-full font-bold shadow-md transition-all hover:scale-[1.02] disabled:hover:scale-100 disabled:opacity-50"
             >
-              {isSubmitting ? (
+              {isGenerating ? (
                 <span className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Generating...
                 </span>
               ) : (
@@ -490,20 +554,98 @@ export default function CreateStoryboardPage() {
           {/* Canvas Board */}
           <div className="flex-1 flex items-center justify-center overflow-y-auto relative p-8">
             
-            {isSubmitting && (
-              <div className="absolute inset-0 glass-panel z-30 flex flex-col items-center justify-center gap-6 backdrop-blur-2xl">
-                <div className="relative w-24 h-24 flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
-                  <Sparkles className="h-8 w-8 text-primary animate-pulse" />
-                </div>
-                <div className="text-center space-y-2">
-                  <h3 className="text-xl font-bold text-foreground">Crafting your vision</h3>
-                  <p className="text-sm text-muted-foreground">Analyzing pacing, shots, and writing hooks...</p>
+            {isGenerating && (
+              <div className="absolute inset-0 glass-panel z-30 flex flex-col items-center justify-center p-6 backdrop-blur-2xl bg-background/80 select-text">
+                <div className="max-w-md w-full bg-card border border-border shadow-2xl rounded-3xl p-8 space-y-6 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <Sparkles className="h-5 w-5 animate-pulse" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-foreground">AI Generation Job</h3>
+                        <p className="text-xs text-muted-foreground font-medium">Job ID: {jobId ? `${jobId.substring(0, 8)}...` : "Starting..."}</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className={`font-bold text-[10px] rounded-md px-2 py-0.5 ${
+                      jobStatus === 'failed' ? 'border-destructive text-destructive bg-destructive/10' :
+                      jobStatus === 'completed' ? 'border-emerald-500 text-emerald-600 bg-emerald-500/10' :
+                      'border-primary text-primary bg-primary/10 animate-pulse'
+                    }`}>
+                      {jobStatus ? jobStatus.toUpperCase() : "PENDING"}
+                    </Badge>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-xs font-bold text-muted-foreground">
+                      <span>{jobStage}</span>
+                      <span className="text-foreground">{jobProgress}%</span>
+                    </div>
+                    {/* Progress Bar */}
+                    <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden border border-border/50">
+                      <motion.div 
+                        className="bg-primary h-full rounded-full"
+                        animate={{ width: `${jobProgress}%` }}
+                        transition={{ duration: 0.35, ease: "easeOut" }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Checklist pipeline logs */}
+                  <div className="space-y-3 pt-2">
+                    <div className="flex items-center gap-2.5 text-sm font-medium text-foreground">
+                      {jobProgress >= 10 ? <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0" /> : <Loader2 className="h-4.5 w-4.5 text-primary animate-spin shrink-0" />}
+                      <span className={jobProgress >= 10 ? "text-muted-foreground line-through decoration-1" : ""}>Creating your hooks</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-sm font-medium text-foreground">
+                      {jobProgress >= 20 ? <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0" /> : jobProgress >= 10 ? <Loader2 className="h-4.5 w-4.5 text-primary animate-spin shrink-0" /> : <div className="h-4.5 w-4.5 border border-border rounded-full shrink-0" />}
+                      <span className={jobProgress >= 20 ? "text-muted-foreground line-through decoration-1" : ""}>Planning your scenes & shot angles</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-sm font-medium text-foreground">
+                      {jobProgress >= 40 ? <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0" /> : jobProgress >= 20 ? <Loader2 className="h-4.5 w-4.5 text-primary animate-spin shrink-0" /> : <div className="h-4.5 w-4.5 border border-border rounded-full shrink-0" />}
+                      <span className={jobProgress >= 40 ? "text-muted-foreground line-through decoration-1" : ""}>Writing your voiceover script</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-sm font-medium text-foreground">
+                      {jobProgress >= 60 ? <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0" /> : jobProgress >= 40 ? <Loader2 className="h-4.5 w-4.5 text-primary animate-spin shrink-0" /> : <div className="h-4.5 w-4.5 border border-border rounded-full shrink-0" />}
+                      <span className={jobProgress >= 60 ? "text-muted-foreground line-through decoration-1" : ""}>Preparing video captions & hashtags</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-sm font-medium text-foreground">
+                      {jobProgress >= 85 ? <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0" /> : jobProgress >= 60 ? <Loader2 className="h-4.5 w-4.5 text-primary animate-spin shrink-0" /> : <div className="h-4.5 w-4.5 border border-border rounded-full shrink-0" />}
+                      <span className={jobProgress >= 85 ? "text-muted-foreground line-through decoration-1" : ""}>Finding music ideas & audio vibes</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-sm font-medium text-foreground">
+                      {jobProgress >= 100 ? <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0" /> : jobProgress >= 85 ? <Loader2 className="h-4.5 w-4.5 text-primary animate-spin shrink-0" /> : <div className="h-4.5 w-4.5 border border-border rounded-full shrink-0" />}
+                      <span className={jobProgress >= 100 ? "text-muted-foreground line-through decoration-1" : ""}>Getting everything ready for shoot day</span>
+                    </div>
+                  </div>
+
+                  {jobStatus === "failed" && (
+                    <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 text-destructive text-xs font-semibold rounded-2xl flex items-start gap-2 max-h-32 overflow-y-auto">
+                      <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-bold">Generation Failed</p>
+                        <p className="font-medium mt-0.5 leading-normal">{jobError}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {jobStatus === "failed" && (
+                    <div className="flex gap-3 pt-2">
+                      <Button variant="outline" className="flex-1 rounded-full font-bold text-xs py-5" onClick={() => setIsGenerating(false)}>
+                        Cancel
+                      </Button>
+                      <Button className="flex-1 rounded-full font-bold text-xs py-5" onClick={handleGenerate}>
+                        Retry Job
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
-            {scenes.length === 0 && !isSubmitting && (
+            {scenes.length === 0 && !isGenerating && (
               <div className="max-w-md w-full glass-panel border-dashed p-10 rounded-3xl text-center shadow-xl space-y-6 animate-fade-in relative overflow-hidden">
                 <div className="w-20 h-20 mx-auto rounded-2xl bg-secondary flex items-center justify-center shadow-inner">
                   <Clapperboard className="h-10 w-10 text-muted-foreground" />
@@ -517,7 +659,7 @@ export default function CreateStoryboardPage() {
               </div>
             )}
 
-            {scenes.length > 0 && !isSubmitting && (
+            {scenes.length > 0 && !isGenerating && (
               <div 
                 className="flex gap-10 items-center justify-center transition-transform duration-300 origin-center"
                 style={{ transform: `scale(${zoom / 100})` }}
@@ -722,7 +864,7 @@ function TabButton({ active, icon, label, onClick }: { active: boolean; icon: Re
           : "text-muted-foreground hover:text-foreground hover:bg-secondary"
       }`}
     >
-      {React.cloneElement(icon as React.ReactElement, { className: 'h-5 w-5' })}
+      {React.cloneElement(icon as any, { className: 'h-5 w-5' })}
       <span className="text-[9px] font-bold tracking-wider">{label}</span>
     </button>
   )
