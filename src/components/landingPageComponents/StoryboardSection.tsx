@@ -7,7 +7,6 @@ import {
   HiVideoCamera as VideoCameraIcon,
   HiChatBubbleBottomCenterText as VoiceIcon,
   HiLightBulb as LightBulbIcon,
-  HiClock as ClockIcon,
   HiSparkles as Sparkles
 } from 'react-icons/hi2'
 
@@ -29,16 +28,16 @@ export default function StoryboardSection() {
           </p>
         </div>
 
-        {/* HERO FEATURE SINGLE SCENE CARD + "+4 MORE SCENES" CALLOUT */}
+        {/* HERO FEATURE SINGLE SCENE CARD + "+4 MORE SCENES" */}
         <div className="max-w-2xl mx-auto space-y-4 pt-2">
           
-          {/* Detailed Scene 1 Card */}
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="rounded-3xl border-2 border-[#8B5E3C]/25 bg-[#FFF7F0] p-6 sm:p-7 shadow-2xl text-left space-y-4 relative overflow-hidden"
+            whileHover={{ y: -4 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="rounded-3xl border-2 border-[#8B5E3C]/25 bg-[#FFF7F0] p-6 sm:p-7 shadow-2xl text-left space-y-4 relative overflow-hidden transition-shadow hover:shadow-2xl"
           >
             {/* Top Bar */}
             <div className="flex justify-between items-center pb-3 border-b border-[#8B5E3C]/15">
@@ -50,7 +49,7 @@ export default function StoryboardSection() {
                   Scene 1: The Alarm Reset
                 </h3>
               </div>
-              <Badge variant="secondary" className="text-[10px] font-bold py-0.5 px-2.5 bg-[#FAF1E8] text-[#8B5E3C]">
+              <Badge variant="secondary" className="text-[10px] font-bold py-0.5 px-2.5 bg-[#FAF1E8] text-[#8B5E3C] shadow-2xs">
                 ⏱ 3 sec
               </Badge>
             </div>
@@ -86,13 +85,14 @@ export default function StoryboardSection() {
             </div>
           </motion.div>
 
-          {/* +4 More Scenes Teaser Capsule */}
+          {/* +4 More Scenes Teaser */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="p-3.5 rounded-2xl border border-dashed border-[#8B5E3C]/40 bg-[#FAF1E8]/60 text-center flex items-center justify-center gap-2 text-xs font-extrabold text-[#8B5E3C]"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.3 }}
+            className="p-3.5 rounded-2xl border border-dashed border-[#8B5E3C]/40 bg-[#FAF1E8]/60 text-center flex items-center justify-center gap-2 text-xs font-extrabold text-[#8B5E3C] cursor-pointer"
           >
             <Sparkles className="h-4 w-4 text-amber-600 animate-pulse" />
             <span>+4 more scenes generated automatically in your shoot plan</span>

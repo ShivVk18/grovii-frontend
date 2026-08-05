@@ -16,32 +16,28 @@ const timelineSteps = [
     title: "Idea Prompt",
     subtitle: "Describe what video you want to record in one raw sentence.",
     icon: <LightBulb className="h-5 w-5 text-amber-500" />,
-    badge: "Input",
-    align: "md:text-right md:pr-12"
+    badge: "Input"
   },
   {
     number: "02",
     title: "Storyboard Plan",
     subtitle: "Get scene timing, visual camera angles, and spoken lines.",
     icon: <Film className="h-5 w-5 text-[#8B5E3C]" />,
-    badge: "Generates",
-    align: "md:text-left md:pl-12"
+    badge: "Generates"
   },
   {
     number: "03",
     title: "Record Flow",
     subtitle: "Follow clear camera direction and read lines effortlessly.",
     icon: <VideoCamera className="h-5 w-5 text-emerald-600" />,
-    badge: "Filming",
-    align: "md:text-right md:pr-12"
+    badge: "Filming"
   },
   {
     number: "04",
     title: "Publish Everywhere",
     subtitle: "Copy matching captions, hashtags, and social post versions.",
     icon: <Share2 className="h-5 w-5 text-purple-600" />,
-    badge: "Output",
-    align: "md:text-left md:pl-12"
+    badge: "Output"
   }
 ]
 
@@ -63,10 +59,10 @@ export default function HowItWorksSection() {
           </p>
         </div>
 
-        {/* EDITORIAL VERTICAL TIMELINE WITH CONNECTED CENTER LINE */}
+        {/* EDITORIAL TIMELINE WITH SEQUENTIAL SCROLL REVEAL */}
         <div className="relative pt-4">
           
-          {/* Vertical Center Connecting Line */}
+          {/* Vertical Center Line */}
           <div className="absolute top-4 bottom-4 left-4 md:left-1/2 -translate-x-1/2 w-0.5 bg-gradient-to-b from-[#8B5E3C]/40 via-[#C48B5E]/30 to-[#8B5E3C]/40 pointer-events-none" />
 
           <div className="space-y-8 relative z-10">
@@ -77,11 +73,11 @@ export default function HowItWorksSection() {
                   key={step.number}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className={`grid grid-cols-1 md:grid-cols-2 gap-4 items-center pl-10 md:pl-0`}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.5, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center pl-10 md:pl-0"
                 >
-                  {/* Left Box (even steps on left, odd steps empty on desktop) */}
+                  {/* Left Content Box */}
                   <div className={`${isEven ? "md:block text-left md:text-right md:pr-10" : "md:hidden"} space-y-1`}>
                     {isEven && (
                       <div className="space-y-1">
@@ -96,14 +92,17 @@ export default function HowItWorksSection() {
                     )}
                   </div>
 
-                  {/* Center Icon Node (Absolute positioning on mobile) */}
+                  {/* Center Node */}
                   <div className="hidden md:flex justify-center items-center pointer-events-none col-span-2 absolute left-1/2 -translate-x-1/2">
-                    <div className="w-10 h-10 rounded-full bg-[#FAF7F2] border-2 border-[#8B5E3C] shadow-md flex items-center justify-center">
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      className="w-10 h-10 rounded-full bg-[#FAF7F2] border-2 border-[#8B5E3C] shadow-md flex items-center justify-center pointer-events-auto cursor-pointer transition-transform"
+                    >
                       {step.icon}
-                    </div>
+                    </motion.div>
                   </div>
 
-                  {/* Right Box (odd steps on right) */}
+                  {/* Right Content Box */}
                   <div className={`${!isEven ? "md:block text-left md:pl-10" : "hidden md:block"}`}>
                     {!isEven && (
                       <div className="space-y-1">
@@ -118,7 +117,7 @@ export default function HowItWorksSection() {
                     )}
                   </div>
 
-                  {/* Mobile View Card */}
+                  {/* Mobile View */}
                   <div className="md:hidden space-y-1">
                     <span className="text-[10px] font-black text-[#8B5E3C] bg-[#FAF1E8] border border-[#8B5E3C]/20 px-2.5 py-0.5 rounded-full inline-block">
                       STEP {step.number} • {step.badge}
