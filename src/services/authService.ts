@@ -13,8 +13,13 @@ export const authService = {
   },
 
   async getMe(): Promise<any> {
-    const response = await api.get('/auth/me');
-    return response.data;
+    try {
+      const response = await api.get('/auth/me');
+      return response.data;
+    } catch (error) {
+      console.warn("Could not fetch authenticated user:", error);
+      return null;
+    }
   },
   
   logout() {

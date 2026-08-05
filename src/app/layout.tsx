@@ -18,7 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Grovii | AI Creative Director Studio",
+  title: "Grovii | AI Creative Director",
   description: "Turn one raw idea into a complete production-ready shoot plan: hooks, 5-scene storyboards, camera angles, lighting setup, scripts, music vibes, captions, and social repurposing.",
   icons: {
     icon: "/favicon.png",

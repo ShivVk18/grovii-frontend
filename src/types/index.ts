@@ -12,19 +12,61 @@ export interface AuthResponse {
   token_type: string;
 }
 
+export interface AdvancedSceneDetails {
+  camera_angle?: string;
+  camera_movement?: string;
+  lighting?: string;
+  transition?: string;
+  music?: string;
+  scene_prompt?: string;
+  negative_prompt?: string;
+  reference_prompt?: string;
+  image_generation_prompt?: string;
+  director_notes?: string;
+  technical_settings?: string;
+}
+
 export interface Scene {
   id: string;
   storyboard_id: string;
-  order: number;
+  scene_number: number;
   title: string;
-  description: string;
-  visual_cue: string;
-  script_segment: string;
+  duration: string;
+  what_to_show?: string;
+  voiceover_example?: string;
+  onscreen_text?: string;
+  what_to_record?: string;
+  what_to_say?: string;
+  tips?: string;
+  emotion?: string;
+  advanced?: AdvancedSceneDetails;
+  
+  // Legacy / fallback fields
+  camera_angle?: string;
+  camera_movement?: string;
+  lighting?: string;
+  transition?: string;
+  music_mood?: string;
+  script_segment?: string;
   scene_prompt?: string;
   negative_prompt?: string;
-  scene_image_url?: string;
-  image_status: 'pending' | 'generating' | 'completed' | 'failed';
+  broll?: string;
   created_at?: string;
+}
+
+export interface MusicItem {
+  id: string;
+  song_name?: string;
+  artist?: string;
+  why_fits?: string;
+  best_scene?: string;
+  mood?: string;
+  platform_popularity?: string;
+  royalty_free_alt?: string;
+  trending_instagram?: string[];
+  trending_tiktok?: string[];
+  trending_youtube?: string[];
+  genre?: string;
 }
 
 export interface Storyboard {
@@ -38,13 +80,21 @@ export interface Storyboard {
   audience: string;
   duration: number;
   platform: string;
+  language?: string;
   status: string;
+  hook?: string;
   script?: string;
   thumbnail_url?: string;
   thumbnail_status?: string;
   created_at: string;
   updated_at: string;
   scenes?: Scene[];
+  captions?: any[];
+  hashtags?: any[];
+  hooks?: any[];
+  music?: MusicItem[];
+  trends?: any[];
+  repurpose?: any;
 }
 
 export interface CreateStoryboardRequest {
@@ -55,6 +105,7 @@ export interface CreateStoryboardRequest {
   audience: string;
   duration: number;
   platform: string;
+  language?: string;
 }
 
 export interface AIResult {

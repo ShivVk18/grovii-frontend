@@ -7,11 +7,12 @@ import { HiFilm as Clapperboard, HiBars3 as Menu, HiXMark as X, HiArrowRight as 
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navLinks = [
-  { title: 'How It Works', href: '#how-it-works' },
-  { title: 'Studio Demo', href: '#demo' },
-  { title: 'Shoot Plan', href: '#shots' },
-  { title: 'Features', href: '#features' },
-  { title: 'Pricing', href: '#pricing' },
+  { title: 'Workflow', href: '#how-it-works' },
+  { title: 'Storyboard', href: '#storyboard' },
+  { title: 'Script', href: '#script' },
+  { title: 'Captions & Music', href: '#music' },
+  { title: 'Repurpose', href: '#repurpose' },
+  { title: 'FAQ', href: '#faq' },
 ]
 
 const Navbar = () => {
@@ -44,8 +45,8 @@ const Navbar = () => {
             alt="Grovii Logo"
             className="w-8 h-8 rounded-xl object-cover shadow-md border border-[#8B5E3C]/20 group-hover:scale-105 transition-transform duration-300"
           />
-          <span className="font-bold text-base text-[#3D2B1F] tracking-tight flex items-center gap-1.5">
-            Grovii <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#F5DFC0]/50 text-[#8B5E3C] uppercase tracking-widest border border-[#8B5E3C]/20">Studio</span>
+          <span className="font-extrabold text-base text-[#3D2B1F] tracking-tight">
+            Grovii
           </span>
         </Link>
 
@@ -70,7 +71,7 @@ const Navbar = () => {
           </Button>
           <Button size="sm" asChild className="rounded-full font-bold text-xs px-5 shadow-md bg-gradient-to-r from-[#8B5E3C] to-[#C48B5E] text-white hover:opacity-95 transition-all">
             <Link href="/dashboard" className="flex items-center gap-1.5 group">
-              Start Studio Workspace
+              Start Creating
               <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </Button>
@@ -116,7 +117,7 @@ const Navbar = () => {
                 </Button>
                 <Button size="sm" asChild className="w-full rounded-full font-bold bg-gradient-to-r from-[#8B5E3C] to-[#C48B5E] text-white">
                   <Link href="/dashboard" className="flex items-center justify-center gap-1.5">
-                    Start Studio Workspace
+                    Start Creating
                   </Link>
                 </Button>
               </div>

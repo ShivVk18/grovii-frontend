@@ -2,14 +2,13 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { HiFilm as Clapperboard } from "react-icons/hi2"
 import { FaTwitter as Twitter, FaInstagram as Instagram, FaYoutube as Youtube, FaLinkedinIn as Linkedin } from "react-icons/fa6"
 
 const Footer = () => {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="w-full border-t border-border/60 bg-card py-16 text-muted-foreground select-none">
+    <footer className="w-full border-t border-border/60 bg-card py-16 text-muted-foreground select-none font-sans">
       <div className="container mx-auto px-6 md:px-12 max-w-7xl space-y-12">
         
         <div className="flex flex-col md:flex-row justify-between items-start gap-10">
@@ -18,15 +17,15 @@ const Footer = () => {
               <img
                 src="/logo.png"
                 alt="Grovii Logo"
-                className="w-8 h-8 rounded-xl object-cover shadow-md border border-[#8B5E3C]/20"
+                className="w-8 h-8 rounded-xl object-cover shadow-xs border border-primary/20"
               />
-              <span className="font-bold text-base text-foreground tracking-tight flex items-center gap-1.5">
-                Grovii <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-secondary text-foreground uppercase tracking-widest border border-border">Studio</span>
+              <span className="font-extrabold text-base text-foreground tracking-tight">
+                Grovii
               </span>
             </Link>
 
-            <p className="text-xs leading-relaxed">
-              The intelligent creative studio for short-form video creators, growth marketers, and agencies.
+            <p className="text-xs leading-relaxed font-medium">
+              A creative planning platform that transforms one idea into a complete, ready-to-shoot content plan.
             </p>
 
             <div className="flex gap-2">
@@ -38,22 +37,22 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="flex gap-16 text-xs">
+          <div className="flex gap-16 text-xs font-medium">
             <div className="space-y-3">
-              <h4 className="font-bold text-foreground uppercase text-[10px] tracking-widest">Studio</h4>
+              <h4 className="font-extrabold text-foreground uppercase text-[10px] tracking-widest">Platform Walkthrough</h4>
               <ul className="space-y-2">
-                <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
-                <li><a href="#demo" className="hover:text-foreground transition-colors">Studio Demo</a></li>
-                <li><a href="#shots" className="hover:text-foreground transition-colors">Shoot Plan</a></li>
-                <li><a href="#features" className="hover:text-foreground transition-colors">Features</a></li>
+                <li><a href="#how-it-works" className="hover:text-foreground transition-colors">Workflow</a></li>
+                <li><a href="#storyboard" className="hover:text-foreground transition-colors">Storyboard</a></li>
+                <li><a href="#script" className="hover:text-foreground transition-colors">Voiceover Script</a></li>
+                <li><a href="#captions" className="hover:text-foreground transition-colors">Captions & Music</a></li>
               </ul>
             </div>
             <div className="space-y-3">
-              <h4 className="font-bold text-foreground uppercase text-[10px] tracking-widest">Product</h4>
+              <h4 className="font-extrabold text-foreground uppercase text-[10px] tracking-widest">Workspace</h4>
               <ul className="space-y-2">
-                <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing Plans</a></li>
-                <li><Link href="/dashboard" className="hover:text-foreground transition-colors">Studio Workspace</Link></li>
-                <li><Link href="/sign-in" className="hover:text-foreground transition-colors">Sign In</Link></li>
+                <li><a href="#repurpose" className="hover:text-foreground transition-colors">Multi-Platform Repurpose</a></li>
+                <li><a href="#faq" className="hover:text-foreground transition-colors">Product FAQ</a></li>
+                <li><Link href="/dashboard" className="hover:text-foreground transition-colors">Launch App</Link></li>
               </ul>
             </div>
           </div>
@@ -61,9 +60,9 @@ const Footer = () => {
 
         <div className="pt-8 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center text-xs text-muted-foreground gap-4">
           <span>© {year} Grovii Inc. All rights reserved.</span>
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-2 font-semibold">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            Studio Services Operational
+            Services Operational
           </span>
         </div>
 

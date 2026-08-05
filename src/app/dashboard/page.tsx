@@ -128,7 +128,7 @@ export default function DashboardPage() {
               className="rounded-full shadow-md font-semibold px-6 gap-2"
             >
               <Plus className="h-4 w-4" />
-              Launch Studio Wizard
+              Create New Plan
             </Button>
             <div className="relative w-full sm:w-96 group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />

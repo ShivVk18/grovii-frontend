@@ -68,6 +68,7 @@ export default function CreateStoryboardPage() {
   const [audience, setAudience] = useState("")
   const [contentStyle, setContentStyle] = useState("pov")
   const [platform, setPlatform] = useState("reels")
+  const [language, setLanguage] = useState("English")
   const [generateScript, setGenerateScript] = useState(true)
   const [reference, setReference] = useState("")
 
@@ -87,6 +88,7 @@ export default function CreateStoryboardPage() {
         audience,
         duration: parseInt(duration),
         platform,
+        language,
       })
       
       setJobId(response.job_id)
@@ -356,6 +358,24 @@ export default function CreateStoryboardPage() {
                         <SelectItem value="15">15 seconds (Standard)</SelectItem>
                         <SelectItem value="20">20 seconds (Detailed)</SelectItem>
                         <SelectItem value="30">30 seconds (Long-form)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label className="text-sm font-bold text-foreground">Generation Language</Label>
+                    <Select value={language} onValueChange={setLanguage}>
+                      <SelectTrigger className="rounded-xl h-11 bg-background font-medium">
+                        <SelectValue placeholder="Select language" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl">
+                        <SelectItem value="English">🇬🇧 English</SelectItem>
+                        <SelectItem value="Hinglish">🇮🇳 Hinglish (Conversational)</SelectItem>
+                        <SelectItem value="Hindi">🇮🇳 Hindi (हिंदी)</SelectItem>
+                        <SelectItem value="Spanish">🇪🇸 Spanish (Español)</SelectItem>
+                        <SelectItem value="French">🇫🇷 French (Français)</SelectItem>
+                        <SelectItem value="German">🇩🇪 German (Deutsch)</SelectItem>
+                        <SelectItem value="Arabic">🇦🇪 Arabic (العربية)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

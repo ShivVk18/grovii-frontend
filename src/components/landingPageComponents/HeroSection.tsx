@@ -1,146 +1,137 @@
 'use client'
 
-import React from 'react'
-import { Button } from '../ui/button'
-import { HiArrowRight as ArrowRight, HiFilm as Film, HiCheckCircle as CheckCircle2, HiSparkles as Sparkles, HiSquare3Stack3D as Layers, HiAdjustmentsHorizontal as Sliders, HiMusicalNote as Music, HiDocumentText as FileText, HiGlobeAsiaAustralia as Globe } from "react-icons/hi2"
+import React, { useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Button } from '../ui/button'
 import { Badge } from '../ui/badge'
-
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.12 } },
-} as any
-
-const item = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-} as any
+import {
+  HiArrowRight as ArrowRight,
+  HiSparkles as Sparkles,
+  HiVideoCamera as VideoCameraIcon,
+  HiChatBubbleBottomCenterText as VoiceIcon
+} from 'react-icons/hi2'
 
 export default function HeroSection() {
+  const [inputValue, setInputValue] = useState("I want to make a Reel about productivity routines.")
+  const [isGenerated, setIsGenerated] = useState(true)
+
   return (
-    <section className="w-full relative overflow-hidden py-16 md:py-28 select-none font-sans">
+    <section className="w-full relative pt-20 pb-28 font-sans select-none overflow-hidden">
+      {/* Subtle Warm Backdrop Orbs */}
+      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[750px] h-[450px] bg-primary/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-1/2 right-10 w-96 h-96 bg-amber-500/10 rounded-full blur-[140px] pointer-events-none" />
 
-      {/* Ambient glow matching SignIn/SignUp */}
-      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-[#F5DFC0]/60 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/2 right-10 w-96 h-96 bg-[#8B5E3C]/10 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="container mx-auto flex flex-col items-center text-center gap-10 px-6 md:px-12 relative z-10">
-
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="flex flex-col items-center gap-8 w-full max-w-4xl"
+      <div className="container mx-auto px-6 md:px-12 max-w-5xl text-center space-y-14 relative z-10">
+        
+        {/* Editorial Linear / Apple Style Typography */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="space-y-6 max-w-3xl mx-auto"
         >
-          {/* Badges */}
-          <motion.div variants={item} className="flex flex-wrap items-center justify-center gap-2">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F5DFC0]/50 border border-[#8B5E3C]/20 text-xs font-semibold text-[#8B5E3C] shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-[#8B5E3C] animate-pulse inline-block" />
-              Built for Global & Indian Content Creators
-              <span className="text-[#8B5E3C]/40">•</span>
-              <span className="text-[#3D2B1F] font-bold">Reels, Shorts & TikTok</span>
-            </div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF7F0] border border-[#8B5E3C]/20 text-[11px] font-bold text-[#3D2B1F]">
-              <Music className="h-3.5 w-3.5 text-[#8B5E3C]" /> Indian Classical & Lofi Audio Vibes
-            </div>
-          </motion.div>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary shadow-xs">
+            <Sparkles className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
+            <span>Creative Planning Platform</span>
+          </div>
 
-          {/* Main Headline */}
-          <motion.div variants={item} className="space-y-4">
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[#3D2B1F] leading-[1.08]">
-              Turn One Idea Into A <br className="hidden sm:inline" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B5E3C] via-[#A0704C] to-[#5C4033]">
-                Complete Shoot Plan
-              </span>
-            </h1>
-          </motion.div>
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-foreground tracking-tight leading-[1.08]">
+            Know exactly what to record <br className="hidden sm:inline" />
+            <span className="brand-gradient-text">
+              before you start filming.
+            </span>
+          </h1>
 
-          {/* Subheadline */}
-          <motion.div variants={item}>
-            <p className="text-base sm:text-lg md:text-xl text-[#5C4033]/90 max-w-2xl font-normal leading-relaxed">
-              Go from a simple English prompt to a camera-ready shoot plan in seconds. 
-              Grovii prepares your <span className="text-[#3D2B1F] font-semibold">viral hooks, 5-scene breakdown, voiceover script, camera angles, Indian Lofi/Sitar vibes,</span> and <span className="text-[#3D2B1F] font-semibold">social posts</span> automatically.
-            </p>
-          </motion.div>
+          <p className="text-base sm:text-xl text-muted-foreground font-medium leading-relaxed max-w-2xl mx-auto">
+            Describe one raw idea. Grovii generates your hooks, scene-by-scene storyboard, camera directions, voiceover script, captions, and music recommendations.
+          </p>
 
-          {/* CTA Buttons */}
-          <motion.div variants={item} className="flex flex-col sm:flex-row items-center gap-4 pt-2 w-full sm:w-auto">
-            <Button size="lg" asChild className="rounded-full font-bold text-sm h-13 px-8 shadow-xl bg-gradient-to-r from-[#8B5E3C] to-[#C48B5E] text-white hover:opacity-95 transition-all duration-300 w-full sm:w-auto group">
-              <Link href="/dashboard" className="flex items-center justify-center gap-2">
-                Start Studio Workspace Free
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          <div className="pt-2">
+            <Button size="lg" asChild className="rounded-full font-bold text-base h-14 px-9 brand-gradient text-white shadow-xl hover:opacity-95 transition-all">
+              <Link href="/dashboard" className="flex items-center gap-2.5">
+                Start Creating
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="rounded-full font-semibold text-sm h-13 px-8 border-[#8B5E3C]/20 text-[#3D2B1F] bg-[#FAF7F2] hover:bg-[#F5DFC0]/40 transition-all w-full sm:w-auto">
-              <Link href="#demo" className="flex items-center justify-center gap-2">
-                <Film className="h-4 w-4 text-[#8B5E3C]" />
-                See Studio Demo
-              </Link>
-            </Button>
-          </motion.div>
+          </div>
+        </motion.div>
 
-          {/* Outcome Transformation Cards (Before vs After) */}
-          <motion.div variants={item} className="w-full max-w-4xl pt-10">
-            <div className="p-6 md:p-8 rounded-3xl border border-[#8B5E3C]/20 bg-[#FFF7F0] shadow-2xl text-left space-y-6">
-              
-              <div className="flex items-center justify-between pb-4 border-b border-[#8B5E3C]/15">
-                <span className="text-xs font-mono font-bold text-[#8B5E3C] uppercase tracking-widest">
-                  Content Creation Transformation
-                </span>
-                <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 border-emerald-500/30 font-bold">
-                  Ready to Shoot in 15s
-                </Badge>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                
-                {/* BEFORE */}
-                <div className="md:col-span-5 bg-[#FAF7F2] p-5 rounded-2xl border border-[#8B5E3C]/15 space-y-3">
-                  <span className="text-[10px] font-bold text-[#8B5E3C] uppercase tracking-wider block">Before Grovii (Raw Prompt)</span>
-                  <div className="p-3 bg-[#FFF7F0] rounded-xl border border-[#8B5E3C]/10 text-xs font-medium text-[#3D2B1F]">
-                    “5 Productive Habits of High-Performing Tech Founders in Bangalore”
-                  </div>
-                  <div className="text-[11px] text-[#5C4033]/70 italic">
-                    ❌ Writer’s block, no shot list, unsure how to structure scenes.
-                  </div>
-                </div>
-
-                {/* ARROW */}
-                <div className="md:col-span-2 flex justify-center">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8B5E3C] to-[#5C4033] text-[#FFF7F0] flex items-center justify-center shadow-lg">
-                    <ArrowRight className="h-5 w-5" />
-                  </div>
-                </div>
-
-                {/* AFTER */}
-                <div className="md:col-span-5 bg-[#FAF7F2] p-5 rounded-2xl border border-[#8B5E3C]/30 shadow-md space-y-3">
-                  <span className="text-[10px] font-bold text-[#8B5E3C] uppercase tracking-wider block">After Grovii (Camera-Ready Plan)</span>
-                  <div className="space-y-2 text-xs font-semibold text-[#3D2B1F]">
-                    <div className="flex items-center justify-between bg-[#FFF7F0] p-2.5 rounded-xl border border-[#8B5E3C]/10">
-                      <span>✓ 3 Scroll-Stopping English Hooks</span>
-                      <span className="text-[10px] text-emerald-700 font-bold">Ready</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-[#FFF7F0] p-2.5 rounded-xl border border-[#8B5E3C]/10">
-                      <span>✓ 4 Shot-by-Shot Scene Cards</span>
-                      <span className="text-[10px] text-emerald-700 font-bold">14s Total</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-[#FFF7F0] p-2.5 rounded-xl border border-[#8B5E3C]/10">
-                      <span>✓ Camera Movements & Lighting</span>
-                      <span className="text-[10px] text-emerald-700 font-bold">Macro/POV</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-[#FFF7F0] p-2.5 rounded-xl border border-[#8B5E3C]/10">
-                      <span>✓ Indian Fusion Music Cues</span>
-                      <span className="text-[10px] text-emerald-700 font-bold">Sitar Lofi Vibe</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
+        {/* Minimal Interactive Prompt Teaser */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
+          className="glass-panel rounded-3xl border border-border p-6 sm:p-8 bg-card/80 shadow-2xl max-w-3xl mx-auto space-y-6 text-left"
+        >
+          {/* Input Box */}
+          <div className="space-y-2">
+            <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest block">
+              Describe Your Idea
+            </label>
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="e.g. I want to make a Reel about productivity routines."
+                className="flex-1 bg-secondary/40 border border-border rounded-2xl px-4 py-3.5 text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+              />
+              <Button
+                onClick={() => setIsGenerated(true)}
+                className="rounded-2xl font-bold text-xs px-7 py-3.5 brand-gradient text-white shadow-xs"
+              >
+                Plan Video
+              </Button>
             </div>
-          </motion.div>
+          </div>
 
+          {/* Minimal 3-Part Teaser Output */}
+          <AnimatePresence>
+            {isGenerated && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="pt-4 border-t border-border/60 space-y-4"
+              >
+                {/* 1. Hook Line */}
+                <div className="p-4.5 bg-primary/5 border border-primary/20 rounded-2xl space-y-1">
+                  <span className="text-[10px] font-bold text-primary uppercase tracking-widest block">
+                    Opening Hook (First 3 Seconds)
+                  </span>
+                  <p className="text-foreground font-extrabold text-base sm:text-lg leading-snug">
+                    “Stop starting your workday in panic mode. Here is the 10-minute routine that saved my focus.”
+                  </p>
+                </div>
+
+                {/* 2. One Storyboard Card Teaser */}
+                <div className="bg-card border border-border p-4.5 rounded-2xl space-y-2.5">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-extrabold text-foreground flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold flex items-center justify-center">1</span>
+                      Scene 1: The Morning Reset
+                    </span>
+                    <Badge variant="secondary" className="text-[10px] font-bold py-0.5 px-2.5">⏱ 3 sec</Badge>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-2.5 pt-1 text-xs">
+                    <div className="bg-secondary/40 p-3 rounded-xl border border-border/40">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block flex items-center gap-1">
+                        <VideoCameraIcon className="h-3 w-3 text-primary" /> 🎥 What to Show
+                      </span>
+                      <p className="text-foreground font-medium mt-0.5">Pouring cold water into a glass near sunlight.</p>
+                    </div>
+                    <div className="bg-primary/5 p-3 rounded-xl border border-primary/20">
+                      <span className="text-[10px] font-bold text-primary uppercase tracking-wider block flex items-center gap-1">
+                        <VoiceIcon className="h-3 w-3 text-primary" /> 🗣 Voiceover Line
+                      </span>
+                      <p className="text-foreground font-bold italic mt-0.5">“Step one: 500ml water before phone notifications.”</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
       </div>

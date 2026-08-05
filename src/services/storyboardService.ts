@@ -34,8 +34,13 @@ export const storyboardService = {
   },
 
   async getJobs(): Promise<any[]> {
-    const response = await api.get<any[]>('/storyboards/jobs');
-    return response.data;
+    try {
+      const response = await api.get<any[]>('/storyboards/jobs');
+      return response.data;
+    } catch (error) {
+      console.warn("Failed to fetch jobs list:", error);
+      return [];
+    }
   },
 
   async getJobStatus(jobId: string): Promise<any> {

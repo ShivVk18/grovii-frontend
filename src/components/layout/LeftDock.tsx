@@ -18,7 +18,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const dockItems = [
   { name: "Home", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Studio", href: "/dashboard/create", icon: Clapperboard },
+  { name: "Create", href: "/dashboard/create", icon: Clapperboard },
   { name: "Projects", href: "/dashboard/storyboards", icon: FolderKanban },
   { name: "AI Jobs", href: "/dashboard/jobs", icon: Sparkles },
   { name: "Templates", href: "/dashboard/templates", icon: LayoutTemplate },

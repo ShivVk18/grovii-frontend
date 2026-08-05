@@ -34,9 +34,9 @@ api.interceptors.response.use(
       // Clear token and redirect to login if unauthorized
       if (typeof window !== 'undefined') {
         localStorage.removeItem('grovii_auth_token');
-        // Only redirect if not already on an auth page
-        if (!window.location.pathname.startsWith('/sign-in') && 
-            !window.location.pathname.startsWith('/sign-up')) {
+        // Only redirect if on protected routes (not on home, sign-in, or sign-up)
+        const path = window.location.pathname;
+        if (path !== '/' && !path.startsWith('/sign-in') && !path.startsWith('/sign-up')) {
           window.location.href = '/sign-in';
         }
       }

@@ -25,8 +25,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (token) {
         try {
           const userData = await authService.getMe();
-          setUser(userData);
-          setIsAuthenticated(true);
+          if (userData) {
+            setUser(userData);
+            setIsAuthenticated(true);
+          } else {
+            localStorage.removeItem('grovii_auth_token');
+            setUser(null);
+            setIsAuthenticated(false);
+          }
         } catch (error) {
           console.error("Failed to restore session", error);
           localStorage.removeItem('grovii_auth_token');
