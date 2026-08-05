@@ -10,81 +10,130 @@ import {
   HiShare as Share2
 } from 'react-icons/hi2'
 
-const steps = [
+const timelineSteps = [
   {
     number: "01",
-    title: "Describe your idea",
-    description: "Type one sentence describing what video you want to record.",
-    icon: <LightBulb className="h-7 w-7 text-amber-500" />
+    title: "Idea Prompt",
+    subtitle: "Describe what video you want to record in one raw sentence.",
+    icon: <LightBulb className="h-5 w-5 text-amber-500" />,
+    badge: "Input",
+    align: "md:text-right md:pr-12"
   },
   {
     number: "02",
-    title: "Review your storyboard",
-    description: "Get scene-by-scene timing, camera positions, and spoken lines.",
-    icon: <Film className="h-7 w-7 text-primary" />
+    title: "Storyboard Plan",
+    subtitle: "Get scene timing, visual camera angles, and spoken lines.",
+    icon: <Film className="h-5 w-5 text-[#8B5E3C]" />,
+    badge: "Generates",
+    align: "md:text-left md:pl-12"
   },
   {
     number: "03",
-    title: "Record scene by scene",
-    description: "Open your shoot plan on your phone and record with total clarity.",
-    icon: <VideoCamera className="h-7 w-7 text-emerald-500" />
+    title: "Record Flow",
+    subtitle: "Follow clear camera direction and read lines effortlessly.",
+    icon: <VideoCamera className="h-5 w-5 text-emerald-600" />,
+    badge: "Filming",
+    align: "md:text-right md:pr-12"
   },
   {
     number: "04",
-    title: "Publish your content",
-    description: "Copy matching captions, hashtags, and multi-platform text copy.",
-    icon: <Share2 className="h-7 w-7 text-purple-500" />
+    title: "Publish Everywhere",
+    subtitle: "Copy matching captions, hashtags, and social post versions.",
+    icon: <Share2 className="h-5 w-5 text-purple-600" />,
+    badge: "Output",
+    align: "md:text-left md:pl-12"
   }
 ]
 
 export default function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="w-full py-24 bg-secondary/15 relative font-sans select-none border-y border-border/60">
-      <div className="container mx-auto px-6 md:px-12 max-w-5xl space-y-14">
+    <section id="how-it-works" className="w-full py-16 md:py-20 bg-[#FFF7F0] relative font-sans select-none overflow-hidden border-b border-[#8B5E3C]/15">
+      <div className="container mx-auto px-6 md:px-12 max-w-4xl space-y-12 relative z-10">
         
-        {/* Section Header */}
-        <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <Badge variant="outline" className="text-[10px] font-extrabold uppercase tracking-widest text-primary border-primary/20 bg-primary/5 rounded-full px-3.5 py-1">
-            Simple Workflow
+        {/* Header */}
+        <div className="text-center space-y-2 max-w-xl mx-auto">
+          <Badge variant="outline" className="text-[10px] font-extrabold uppercase tracking-widest text-[#8B5E3C] border-[#8B5E3C]/20 bg-[#FAF1E8] rounded-full px-3.5 py-1">
+            Editorial Timeline
           </Badge>
-          <h2 className="text-3xl sm:text-5xl font-black text-foreground tracking-tight">
+          <h2 className="text-2xl sm:text-4xl font-black text-[#3D2B1F] tracking-tight">
             How Grovii Works
           </h2>
-          <p className="text-base text-muted-foreground font-medium">
+          <p className="text-sm text-[#5C4033]/80 font-medium">
             Four simple steps from raw idea to published video.
           </p>
         </div>
 
-        {/* 4 Process Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {steps.map((s, idx) => (
-            <motion.div
-              key={s.number}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: idx * 0.08 }}
-              className="glass-panel p-6 rounded-3xl border border-border bg-card flex flex-col justify-between space-y-8 hover:border-primary/30 transition-all duration-300 group"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-black text-primary bg-primary/10 px-2.5 py-1 rounded-xl">
-                  {s.number}
-                </span>
-                <div className="p-3 rounded-2xl bg-secondary/60 group-hover:scale-110 transition-transform">
-                  {s.icon}
-                </div>
-              </div>
+        {/* EDITORIAL VERTICAL TIMELINE WITH CONNECTED CENTER LINE */}
+        <div className="relative pt-4">
+          
+          {/* Vertical Center Connecting Line */}
+          <div className="absolute top-4 bottom-4 left-4 md:left-1/2 -translate-x-1/2 w-0.5 bg-gradient-to-b from-[#8B5E3C]/40 via-[#C48B5E]/30 to-[#8B5E3C]/40 pointer-events-none" />
 
-              <div className="space-y-2">
-                <h3 className="text-base font-extrabold text-foreground leading-snug">
-                  {s.title}
-                </h3>
-                <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-                  {s.description}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+          <div className="space-y-8 relative z-10">
+            {timelineSteps.map((step, idx) => {
+              const isEven = idx % 2 === 0
+              return (
+                <motion.div
+                  key={step.number}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  className={`grid grid-cols-1 md:grid-cols-2 gap-4 items-center pl-10 md:pl-0`}
+                >
+                  {/* Left Box (even steps on left, odd steps empty on desktop) */}
+                  <div className={`${isEven ? "md:block text-left md:text-right md:pr-10" : "md:hidden"} space-y-1`}>
+                    {isEven && (
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-black text-[#8B5E3C] bg-[#FAF1E8] border border-[#8B5E3C]/20 px-2.5 py-0.5 rounded-full inline-block">
+                          STEP {step.number} • {step.badge}
+                        </span>
+                        <h3 className="text-lg font-black text-[#3D2B1F]">{step.title}</h3>
+                        <p className="text-xs text-[#5C4033] font-medium leading-relaxed max-w-sm md:ml-auto">
+                          {step.subtitle}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Center Icon Node (Absolute positioning on mobile) */}
+                  <div className="hidden md:flex justify-center items-center pointer-events-none col-span-2 absolute left-1/2 -translate-x-1/2">
+                    <div className="w-10 h-10 rounded-full bg-[#FAF7F2] border-2 border-[#8B5E3C] shadow-md flex items-center justify-center">
+                      {step.icon}
+                    </div>
+                  </div>
+
+                  {/* Right Box (odd steps on right) */}
+                  <div className={`${!isEven ? "md:block text-left md:pl-10" : "hidden md:block"}`}>
+                    {!isEven && (
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-black text-[#8B5E3C] bg-[#FAF1E8] border border-[#8B5E3C]/20 px-2.5 py-0.5 rounded-full inline-block">
+                          STEP {step.number} • {step.badge}
+                        </span>
+                        <h3 className="text-lg font-black text-[#3D2B1F]">{step.title}</h3>
+                        <p className="text-xs text-[#5C4033] font-medium leading-relaxed max-w-sm">
+                          {step.subtitle}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Mobile View Card */}
+                  <div className="md:hidden space-y-1">
+                    <span className="text-[10px] font-black text-[#8B5E3C] bg-[#FAF1E8] border border-[#8B5E3C]/20 px-2.5 py-0.5 rounded-full inline-block">
+                      STEP {step.number} • {step.badge}
+                    </span>
+                    <h3 className="text-base font-black text-[#3D2B1F]">{step.title}</h3>
+                    <p className="text-xs text-[#5C4033] font-medium leading-relaxed">
+                      {step.subtitle}
+                    </p>
+                  </div>
+
+                </motion.div>
+              )
+            })}
+          </div>
+
         </div>
 
       </div>

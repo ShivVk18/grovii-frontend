@@ -9,10 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 const navLinks = [
   { title: 'Workflow', href: '#how-it-works' },
   { title: 'Storyboard', href: '#storyboard' },
-  { title: 'Script', href: '#script' },
-  { title: 'Captions & Music', href: '#music' },
-  { title: 'Repurpose', href: '#repurpose' },
-  { title: 'FAQ', href: '#faq' },
+  { title: 'Creative Toolkit', href: '#toolkit' },
 ]
 
 const Navbar = () => {

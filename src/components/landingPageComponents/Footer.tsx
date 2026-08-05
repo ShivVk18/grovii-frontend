@@ -41,18 +41,15 @@ const Footer = () => {
             <div className="space-y-3">
               <h4 className="font-extrabold text-foreground uppercase text-[10px] tracking-widest">Platform Walkthrough</h4>
               <ul className="space-y-2">
-                <li><a href="#how-it-works" className="hover:text-foreground transition-colors">Workflow</a></li>
-                <li><a href="#storyboard" className="hover:text-foreground transition-colors">Storyboard</a></li>
-                <li><a href="#script" className="hover:text-foreground transition-colors">Voiceover Script</a></li>
-                <li><a href="#captions" className="hover:text-foreground transition-colors">Captions & Music</a></li>
+                <li><a href="#how-it-works" className="hover:text-foreground transition-colors">Workflow Timeline</a></li>
+                <li><a href="#storyboard" className="hover:text-foreground transition-colors">Camera Storyboard</a></li>
+                <li><a href="#toolkit" className="hover:text-foreground transition-colors">Creative Toolkit Bento</a></li>
               </ul>
             </div>
             <div className="space-y-3">
               <h4 className="font-extrabold text-foreground uppercase text-[10px] tracking-widest">Workspace</h4>
               <ul className="space-y-2">
-                <li><a href="#repurpose" className="hover:text-foreground transition-colors">Multi-Platform Repurpose</a></li>
-                <li><a href="#faq" className="hover:text-foreground transition-colors">Product FAQ</a></li>
-                <li><Link href="/dashboard" className="hover:text-foreground transition-colors">Launch App</Link></li>
+                <li><Link href="/dashboard" className="hover:text-foreground transition-colors">Launch Studio App</Link></li>
               </ul>
             </div>
           </div>
