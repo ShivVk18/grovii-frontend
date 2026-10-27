@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect } from "react"
-import { usePathname, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
-import { LeftDock } from "@/components/layout/LeftDock"
+import { Sidebar } from "@/components/layout/Sidebar"
 import { TopHeader } from "@/components/layout/TopHeader"
 
 export default function DashboardLayout({
@@ -23,30 +23,29 @@ export default function DashboardLayout({
   if (isLoading) {
     return (
       <div className="min-h-screen w-screen flex items-center justify-center bg-background">
-        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-3 border-primary/20 border-t-primary rounded-full animate-spin"></div>
       </div>
     )
   }
 
   if (!isAuthenticated || !user) {
-    return null // Will redirect in useEffect
+    return null
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-background text-foreground font-sans antialiased overflow-hidden selection:bg-primary/20">
+    <div className="flex min-h-screen w-full bg-background text-foreground font-sans antialiased selection:bg-primary/20">
       
-      {/* Left Dock Navigation */}
-      <LeftDock />
+      {/* Left Sidebar Navigation */}
+      <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 pl-[104px]"> 
-        {/* pl-[104px] leaves room for the fixed 72px dock + margin on the left */}
+      <div className="flex-1 flex flex-col min-w-0">
         
         {/* Top Header Navigation */}
         <TopHeader />
 
         {/* Dynamic Page Content */}
-        <main className="flex-1 overflow-y-auto relative">
+        <main className="flex-1 overflow-y-auto relative p-6 sm:p-8 lg:p-10 max-w-6xl mx-auto w-full">
           {children}
         </main>
       </div>

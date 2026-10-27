@@ -5,134 +5,95 @@ import { motion } from 'framer-motion'
 import { Badge } from '../ui/badge'
 import {
   HiLightBulb as LightBulb,
-  HiFilm as Film,
+  HiSparkles as Sparkles,
   HiVideoCamera as VideoCamera,
   HiShare as Share2
 } from 'react-icons/hi2'
 
-const timelineSteps = [
+const steps = [
   {
-    number: "01",
-    title: "Idea Prompt",
-    subtitle: "Describe what video you want to record in one raw sentence.",
-    icon: <LightBulb className="h-5 w-5 text-amber-500" />,
-    badge: "Input"
+    num: "01",
+    title: "Raw Idea",
+    desc: "Type a topic or vague concept. No need to write scripts or format prompts.",
+    icon: LightBulb,
+    tag: "Input"
   },
   {
-    number: "02",
-    title: "Storyboard Plan",
-    subtitle: "Get scene timing, visual camera angles, and spoken lines.",
-    icon: <Film className="h-5 w-5 text-[#8B5E3C]" />,
-    badge: "Generates"
+    num: "02",
+    title: "Viral Hook & Pacing",
+    desc: "Grovii formulates high-retention opening hooks that stop the scroll in 3 seconds.",
+    icon: Sparkles,
+    tag: "Directing"
   },
   {
-    number: "03",
-    title: "Record Flow",
-    subtitle: "Follow clear camera direction and read lines effortlessly.",
-    icon: <VideoCamera className="h-5 w-5 text-emerald-600" />,
-    badge: "Filming"
+    num: "03",
+    title: "Scene & Camera Blueprint",
+    desc: "Get exact shot-by-shot directions: what to record, camera angles, voiceover, and B-roll.",
+    icon: VideoCamera,
+    tag: "Pre-Production"
   },
   {
-    number: "04",
-    title: "Publish Everywhere",
-    subtitle: "Copy matching captions, hashtags, and social post versions.",
-    icon: <Share2 className="h-5 w-5 text-purple-600" />,
-    badge: "Output"
+    num: "04",
+    title: "Record & Publish",
+    desc: "Open Grovii on set to record seamlessly, then copy captions, tags, and repurposed threads.",
+    icon: Share2,
+    tag: "Output"
   }
 ]
 
 export default function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="w-full py-16 md:py-20 bg-[#FFF7F0] relative font-sans select-none overflow-hidden border-b border-[#8B5E3C]/15">
-      <div className="container mx-auto px-6 md:px-12 max-w-4xl space-y-12 relative z-10">
+    <section id="how-it-works" className="w-full py-20 bg-card border-b border-border font-sans select-none">
+      <div className="container mx-auto px-6 md:px-12 max-w-5xl space-y-12 text-center">
         
-        {/* Header */}
-        <div className="text-center space-y-2 max-w-xl mx-auto">
-          <Badge variant="outline" className="text-[10px] font-extrabold uppercase tracking-widest text-[#8B5E3C] border-[#8B5E3C]/20 bg-[#FAF1E8] rounded-full px-3.5 py-1">
-            Editorial Timeline
+        <div className="space-y-2 max-w-xl mx-auto">
+          <Badge variant="outline" className="text-[10px] font-extrabold uppercase tracking-widest text-primary border-primary/20 bg-secondary rounded-full px-3 py-1">
+            Director Workflow
           </Badge>
-          <h2 className="text-2xl sm:text-4xl font-black text-[#3D2B1F] tracking-tight">
-            How Grovii Works
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+            How Grovii works
           </h2>
-          <p className="text-sm text-[#5C4033]/80 font-medium">
-            Four simple steps from raw idea to published video.
+          <p className="text-sm text-muted-foreground font-medium">
+            From an unformed idea to a camera-ready blueprint in 4 simple stages.
           </p>
         </div>
 
-        {/* EDITORIAL TIMELINE WITH SEQUENTIAL SCROLL REVEAL */}
-        <div className="relative pt-4">
-          
-          {/* Vertical Center Line */}
-          <div className="absolute top-4 bottom-4 left-4 md:left-1/2 -translate-x-1/2 w-0.5 bg-gradient-to-b from-[#8B5E3C]/40 via-[#C48B5E]/30 to-[#8B5E3C]/40 pointer-events-none" />
-
-          <div className="space-y-8 relative z-10">
-            {timelineSteps.map((step, idx) => {
-              const isEven = idx % 2 === 0
-              return (
-                <motion.div
-                  key={step.number}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-60px" }}
-                  transition={{ duration: 0.5, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center pl-10 md:pl-0"
-                >
-                  {/* Left Content Box */}
-                  <div className={`${isEven ? "md:block text-left md:text-right md:pr-10" : "md:hidden"} space-y-1`}>
-                    {isEven && (
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-black text-[#8B5E3C] bg-[#FAF1E8] border border-[#8B5E3C]/20 px-2.5 py-0.5 rounded-full inline-block">
-                          STEP {step.number} • {step.badge}
-                        </span>
-                        <h3 className="text-lg font-black text-[#3D2B1F]">{step.title}</h3>
-                        <p className="text-xs text-[#5C4033] font-medium leading-relaxed max-w-sm md:ml-auto">
-                          {step.subtitle}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Center Node */}
-                  <div className="hidden md:flex justify-center items-center pointer-events-none col-span-2 absolute left-1/2 -translate-x-1/2">
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      className="w-10 h-10 rounded-full bg-[#FAF7F2] border-2 border-[#8B5E3C] shadow-md flex items-center justify-center pointer-events-auto cursor-pointer transition-transform"
-                    >
-                      {step.icon}
-                    </motion.div>
-                  </div>
-
-                  {/* Right Content Box */}
-                  <div className={`${!isEven ? "md:block text-left md:pl-10" : "hidden md:block"}`}>
-                    {!isEven && (
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-black text-[#8B5E3C] bg-[#FAF1E8] border border-[#8B5E3C]/20 px-2.5 py-0.5 rounded-full inline-block">
-                          STEP {step.number} • {step.badge}
-                        </span>
-                        <h3 className="text-lg font-black text-[#3D2B1F]">{step.title}</h3>
-                        <p className="text-xs text-[#5C4033] font-medium leading-relaxed max-w-sm">
-                          {step.subtitle}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Mobile View */}
-                  <div className="md:hidden space-y-1">
-                    <span className="text-[10px] font-black text-[#8B5E3C] bg-[#FAF1E8] border border-[#8B5E3C]/20 px-2.5 py-0.5 rounded-full inline-block">
-                      STEP {step.number} • {step.badge}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+          {steps.map((step, idx) => {
+            const Icon = step.icon
+            return (
+              <motion.div
+                key={step.num}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.1 }}
+                className="rounded-3xl border border-border bg-secondary/20 p-6 space-y-4 flex flex-col justify-between hover:border-primary/30 transition-colors"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-primary">
+                      {step.num}
                     </span>
-                    <h3 className="text-base font-black text-[#3D2B1F]">{step.title}</h3>
-                    <p className="text-xs text-[#5C4033] font-medium leading-relaxed">
-                      {step.subtitle}
-                    </p>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-2 py-0.5 rounded-md bg-secondary border border-border">
+                      {step.tag}
+                    </span>
                   </div>
 
-                </motion.div>
-              )
-            })}
-          </div>
+                  <div className="w-10 h-10 rounded-2xl bg-card border border-border flex items-center justify-center text-primary shadow-xs">
+                    <Icon className="h-5 w-5" />
+                  </div>
 
+                  <h3 className="text-base font-bold text-foreground">
+                    {step.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {step.desc}
+                  </p>
+                </div>
+              </motion.div>
+            )
+          })}
         </div>
 
       </div>

@@ -8,43 +8,44 @@ import { HiArrowRight as ArrowRight, HiSparkles as Sparkles } from 'react-icons/
 
 export default function FinalCTASection() {
   return (
-    <section id="start-creating" className="w-full py-20 md:py-24 bg-[#FAF7F2] relative font-sans select-none overflow-hidden border-b border-[#8B5E3C]/15">
+    <section className="w-full py-20 md:py-28 bg-card relative font-sans select-none overflow-hidden border-b border-border">
       
-      {/* Background Soft Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[280px] bg-gradient-to-r from-[#8B5E3C]/20 via-[#F5DFC0]/35 to-[#C48B5E]/20 rounded-full blur-[130px] pointer-events-none" />
+      {/* Subtle Ambient Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="container mx-auto px-6 md:px-12 max-w-4xl text-center space-y-6 relative z-10">
+      <div className="container mx-auto px-6 md:px-12 max-w-3xl text-center space-y-6 relative z-10">
         
-        <div className="space-y-3 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FAF1E8] border border-[#8B5E3C]/20 text-[11px] font-bold text-[#8B5E3C]">
-            <Sparkles className="h-3.5 w-3.5 text-amber-600 animate-pulse" />
+        <div className="space-y-3 max-w-xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-secondary border border-border text-xs font-bold text-primary">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
             <span>Ready to Shoot</span>
           </div>
 
-          {/* Large Editorial Headline */}
-          <h2 className="text-3xl sm:text-5xl font-black text-[#3D2B1F] tracking-tight leading-tight">
-            Ready to turn your next idea <br className="hidden sm:inline" />
-            into a complete video plan?
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-foreground tracking-tight leading-tight">
+            Ready to direct your next video?
           </h2>
 
-          <p className="text-sm sm:text-base text-[#5C4033]/80 font-medium max-w-md mx-auto">
-            Open Grovii and start creating camera-ready shoot plans in seconds.
+          <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-md mx-auto">
+            Drop your idea into Grovii and get a complete, camera-ready shoot plan in 30 seconds.
           </p>
         </div>
 
-        {/* Single Primary CTA */}
-        <motion.div 
-          whileHover={{ scale: 1.03, y: -1 }}
-          whileTap={{ scale: 0.98 }}
-          className="pt-2 inline-block"
-        >
-          <Button size="lg" asChild className="rounded-full font-extrabold text-base h-14 px-10 bg-gradient-to-r from-[#8B5E3C] via-[#A47551] to-[#C48B5E] text-white shadow-xl hover:opacity-95 transition-all group">
-            <Link href="/dashboard" className="flex items-center gap-2.5">
-              Start Creating Free
-              <ArrowRight className="h-4.5 w-4.5 group-hover:translate-x-1 transition-transform" />
+        <div className="pt-2">
+          <Button
+            size="lg"
+            asChild
+            className="rounded-2xl h-13 px-9 bg-primary text-primary-foreground font-bold text-sm shadow-md hover:opacity-95 transition-all gap-2"
+          >
+            <Link href="/dashboard/create">
+              <span>Start Directing Free</span>
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
-        </motion.div>
+        </div>
+
+        <p className="text-xs text-muted-foreground font-medium pt-1">
+          Free forever plan available · 3 shoot plans included every month
+        </p>
 
       </div>
     </section>

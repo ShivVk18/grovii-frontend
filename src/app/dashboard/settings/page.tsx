@@ -22,7 +22,8 @@ import {
   HiSparkles as Sparkles,
   HiShieldCheck as ShieldCheck,
   HiCheck as Check,
-  HiArrowPath as Loader2
+  HiArrowPath as Loader2,
+  HiArrowRightOnRectangle as LogoutIcon
 } from "react-icons/hi2";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -352,6 +353,39 @@ export default function SettingsPage() {
                 Dark Theme
               </>
             )}
+          </Button>
+        </div>
+      </motion.div>
+
+      {/* Session Management Section */}
+      <motion.div variants={itemVariant} className="glass-panel rounded-3xl border border-border p-6 sm:p-8 bg-card relative overflow-hidden text-left">
+        <div className="flex flex-row items-center gap-4 pb-6 border-b border-border">
+          <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center text-primary shrink-0">
+            <LogoutIcon className="h-6 w-6" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Session & Authentication</h2>
+            <p className="text-xs text-muted-foreground font-medium">Manage your active creator login session on this device</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-6 pt-6">
+          <div className="text-left">
+            <h4 className="text-sm font-bold text-foreground">Sign Out of Workspace</h4>
+            <p className="text-xs text-muted-foreground mt-0.5 font-medium">End your active studio session and return to the sign-in screen</p>
+          </div>
+
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              logout();
+              toast.success("Logged out successfully");
+              window.location.href = "/sign-in";
+            }}
+            className="rounded-full border-destructive/30 text-destructive hover:bg-destructive/10 font-bold text-xs px-6 py-5 h-11 shadow-sm transition gap-2"
+          >
+            <LogoutIcon className="h-4 w-4" />
+            Log Out
           </Button>
         </div>
       </motion.div>

@@ -2,348 +2,314 @@
 
 import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { motion, animate } from "framer-motion"
+import Link from "next/link"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import {
-  HiMagnifyingGlass as Search,
   HiPlus as Plus,
-  HiVideoCamera as Video,
-  HiDocumentText as FileText,
-  HiClock as Clock,
   HiArrowRight as ArrowRight,
-  HiArrowTrendingUp as TrendingUp,
+  HiClock as Clock,
   HiSparkles as Sparkles,
-  HiSquare3Stack3D as Layers,
-  HiDevicePhoneMobile as Smartphone,
-  HiBolt as Zap,
-  HiEllipsisVertical as MoreVertical,
-  HiFolderOpen as FolderOpen
+  HiFilm as Film,
+  HiFolder as Folder,
+  HiRectangleStack as TemplateIcon,
+  HiDevicePhoneMobile as PhoneIcon
 } from "react-icons/hi2"
 import { useAuth } from "@/contexts/AuthContext"
 import { storyboardService } from "@/services/storyboardService"
 import { Storyboard } from "@/types"
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
+const curatedTemplates = [
+  {
+    id: "viral-hook",
+    title: "60-Second Viral Hook & Story",
+    category: "Short-Form",
+    duration: 60,
+    scenesCount: 5,
+    description: "Pattern-interrupt hook followed by 3 core insights and a high-converting punchline CTA.",
+    platform: "Reel / TikTok",
+    prompt: "A 60s breakdown of a high-leverage habit that transforms creative focus"
+  },
+  {
+    id: "educational-breakdown",
+    title: "Step-by-Step Educational Reel",
+    category: "Tutorial",
+    duration: 45,
+    scenesCount: 4,
+    description: "Clear problem agitating, 3 quick actionable steps with on-screen text, and save prompt.",
+    platform: "Instagram",
+    prompt: "3 overlooked tools that streamline video pre-production and scriptwriting"
+  },
+  {
+    id: "day-in-life",
+    title: "Cinematic Aesthetic Vlog",
+    category: "Lifestyle",
+    duration: 30,
+    scenesCount: 4,
+    description: "Fast-paced visual B-roll cuts paired with reflective voiceover and ambient music.",
+    platform: "YouTube Shorts",
+    prompt: "A 30s morning creator routine focusing on deep work and physical energy"
   }
-} as any
-
-const itemVariant = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
-} as any
-
-function AnimatedCounter({ value }: { value: number }) {
-  const ref = React.useRef<HTMLSpanElement>(null)
-
-  useEffect(() => {
-    const node = ref.current
-    if (!node) return
-
-    const controls = animate(0, value, {
-      duration: 1.2,
-      ease: "easeOut",
-      onUpdate(v) {
-        node.textContent = Math.round(v).toString()
-      }
-    })
-
-    return () => controls.stop()
-  }, [value])
-
-  return <span ref={ref}>0</span>
-}
+]
 
 export default function DashboardPage() {
   const router = useRouter()
   const { user } = useAuth()
-  const [searchQuery, setSearchQuery] = useState("")
+  const [quickIdea, setQuickIdea] = useState("")
   const [storyboards, setStoryboards] = useState<Storyboard[]>([])
-  const [activeJobsCount, setActiveJobsCount] = useState(0)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const fetchStoryboards = async () => {
       try {
-        const [storyboardsData, jobsData] = await Promise.all([
-          storyboardService.getStoryboards(),
-          storyboardService.getJobs()
-        ])
-        setStoryboards(storyboardsData)
-        
-        const active = jobsData.filter(j => j.status === 'pending' || j.status === 'processing')
-        setActiveJobsCount(active.length)
+        const data = await storyboardService.getStoryboards()
+        setStoryboards(data)
       } catch (error) {
-        console.error("Failed to fetch dashboard data", error)
+        console.error("Failed to fetch storyboards", error)
       } finally {
         setLoading(false)
       }
     }
-    fetchDashboardData()
+    fetchStoryboards()
   }, [])
 
-  const filteredStoryboards = storyboards.filter(s =>
-    (s.title?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-    (s.tone?.toLowerCase() || "").includes(searchQuery.toLowerCase())
-  )
+  const handleStartWithIdea = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!quickIdea.trim()) {
+      router.push("/dashboard/create")
+      return
+    }
+    router.push(`/dashboard/create?idea=${encodeURIComponent(quickIdea.trim())}`)
+  }
 
-  const avgDuration = storyboards.length > 0 
-    ? Math.round(storyboards.reduce((acc, curr) => acc + (curr.duration || 0), 0) / storyboards.length)
-    : 0
+  const handleUseTemplate = (promptText: string) => {
+    router.push(`/dashboard/create?idea=${encodeURIComponent(promptText)}`)
+  }
 
   return (
-    <motion.div 
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="space-y-12 pb-12 font-sans select-none max-w-7xl mx-auto"
-    >
+    <div className="space-y-12 pb-16">
       
-      {/* 1. Hero Section (Linear / Apple style) */}
-      <motion.div variants={itemVariant} className="relative rounded-3xl overflow-hidden bg-card text-card-foreground p-8 md:p-12 shadow-sm border border-border">
-        {/* Subtle gradient orb for premium feel */}
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
-        
-        <div className="relative z-10 max-w-3xl space-y-6">
-          <div className="space-y-3">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight text-foreground">
-              Welcome back, {user?.username || 'Creator'}.
+      {/* ── 1. Hero Prompt-First Creation Box ── */}
+      <section className="relative rounded-3xl border border-border bg-card p-8 sm:p-10 shadow-xs overflow-hidden">
+        {/* Subtle warm accent ambient glow */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 max-w-2xl space-y-4">
+          <div className="space-y-1.5">
+            <span className="text-xs font-bold text-primary tracking-wide uppercase">
+              AI Director Workspace
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+              What are you creating today, {user?.username || 'Creator'}?
             </h1>
-            <p className="text-muted-foreground text-base md:text-lg max-w-xl font-medium leading-relaxed">
-              Turn raw ideas into production-ready shoot plans, camera-directed storyboards, and multi-platform social posts with your AI Director.
+            <p className="text-sm sm:text-base text-muted-foreground font-medium leading-relaxed">
+              Drop an idea or topic. Grovii turns it into a scene-by-scene shoot plan with hooks, camera angles, and voiceover scripts.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-2">
-            <Button 
-              size="lg" 
-              onClick={() => router.push("/dashboard/create")}
-              className="rounded-full shadow-md font-semibold px-6 gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Create New Plan
-            </Button>
-            <div className="relative w-full sm:w-96 group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search projects, tones..."
-                className="w-full pl-11 bg-secondary/50 border-border focus:bg-background rounded-full h-11 text-sm shadow-sm transition-all duration-300"
+          <form onSubmit={handleStartWithIdea} className="pt-2 space-y-3">
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                value={quickIdea}
+                onChange={(e) => setQuickIdea(e.target.value)}
+                placeholder="e.g. 5 morning habits that doubled my output as a solo creator..."
+                className="w-full h-14 pl-5 pr-36 rounded-2xl bg-secondary/50 border border-border focus:border-primary/40 focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm sm:text-base text-foreground placeholder:text-muted-foreground/60 transition-all"
               />
+              <div className="absolute right-2">
+                <Button 
+                  type="submit"
+                  className="rounded-xl h-10 px-4 bg-primary text-primary-foreground font-semibold text-xs gap-1.5 shadow-sm hover:opacity-95"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  <span>Start Plan</span>
+                </Button>
+              </div>
             </div>
-          </div>
+
+            {/* Quick Prompt Pill Starters */}
+            <div className="flex items-center gap-2 flex-wrap pt-1 text-xs text-muted-foreground">
+              <span className="text-[11px] font-semibold text-muted-foreground/80">Try starting with:</span>
+              <button
+                type="button"
+                onClick={() => setQuickIdea("How to build a personal brand in 2026 without burning out")}
+                className="px-2.5 py-1 rounded-lg bg-secondary/60 hover:bg-secondary border border-border/60 text-muted-foreground hover:text-foreground text-[11px] transition-colors"
+              >
+                Personal Brand Strategy
+              </button>
+              <button
+                type="button"
+                onClick={() => setQuickIdea("My top 3 camera setups for crisp talking-head videos")}
+                className="px-2.5 py-1 rounded-lg bg-secondary/60 hover:bg-secondary border border-border/60 text-muted-foreground hover:text-foreground text-[11px] transition-colors"
+              >
+                Creator Tech Setup
+              </button>
+              <button
+                type="button"
+                onClick={() => setQuickIdea("Why 90% of creators quit in month 2 and how to beat it")}
+                className="px-2.5 py-1 rounded-lg bg-secondary/60 hover:bg-secondary border border-border/60 text-muted-foreground hover:text-foreground text-[11px] transition-colors"
+              >
+                Creator Mindset
+              </button>
+            </div>
+          </form>
         </div>
-      </motion.div>
+      </section>
 
-      {/* 2. Stats Bento Grid */}
-      <motion.div variants={itemVariant} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Credits Remaining"
-          value={user?.credits !== undefined ? <AnimatedCounter value={user.credits} /> : "0"}
-          subText={user?.plan ? `${user.plan.toUpperCase()} Tier` : "Free Tier"}
-          icon={<Zap className="h-5 w-5 text-amber-500" />}
-        />
-        <StatCard
-          title="Active AI Jobs"
-          value={<AnimatedCounter value={activeJobsCount} />}
-          subText="Jobs processing in background"
-          icon={<Sparkles className="h-5 w-5 text-primary" />}
-        />
-        <StatCard
-          title="Total Projects"
-          value={<AnimatedCounter value={storyboards.length} />}
-          subText="In your creative library"
-          icon={<FileText className="h-5 w-5 text-muted-foreground" />}
-        />
-        <StatCard
-          title="Avg Duration"
-          value={avgDuration > 0 ? <><AnimatedCounter value={avgDuration} />s</> : "0s"}
-          subText="Optimized for short-form"
-          icon={<Clock className="h-5 w-5 text-muted-foreground" />}
-        />
-      </motion.div>
-
-      {/* 3. Quick Actions / Formats */}
-      <motion.div variants={itemVariant} className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold text-foreground tracking-tight">Quick Actions</h2>
-          <Button variant="ghost" onClick={() => router.push("/dashboard/create")} className="text-sm font-medium text-muted-foreground hover:text-foreground">
-            View All <ArrowRight className="ml-1.5 h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <FormatCard
-            title="Instagram Reel"
-            description="9:16 Portrait"
-            icon={<Smartphone className="h-5 w-5" />}
-            onClick={() => router.push("/dashboard/create")}
-          />
-          <FormatCard
-            title="TikTok Video"
-            description="High Hook Density"
-            icon={<Zap className="h-5 w-5" />}
-            onClick={() => router.push("/dashboard/create")}
-          />
-          <FormatCard
-            title="YouTube Shorts"
-            description="Search Optimized"
-            icon={<Video className="h-5 w-5" />}
-            onClick={() => router.push("/dashboard/create")}
-          />
-          <FormatCard
-            title="Custom Canvas"
-            description="Freeform Aspect"
-            icon={<Layers className="h-5 w-5" />}
-            onClick={() => router.push("/dashboard/create")}
-          />
-        </div>
-      </motion.div>
-
-      {/* 4. Recent Storyboards Gallery */}
-      <motion.div variants={itemVariant} className="space-y-6">
-        <div className="flex justify-between items-center">
+      {/* ── 2. Recent Storyboards ── */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-foreground tracking-tight">Recent Projects</h2>
-            <p className="text-sm text-muted-foreground mt-1">Pick up right where you left off</p>
+            <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
+              <Film className="h-4 w-4 text-primary" />
+              Recent Storyboards
+            </h2>
+            <p className="text-xs text-muted-foreground font-medium">
+              Pick up where you left off or export shoot plans to your phone.
+            </p>
           </div>
+          {storyboards.length > 0 && (
+            <Link
+              href="/dashboard/storyboards"
+              className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+            >
+              View all ({storyboards.length})
+              <ArrowRight className="h-3 w-3" />
+            </Link>
+          )}
         </div>
 
         {loading ? (
-          <div className="glass-panel rounded-3xl p-12 text-center flex flex-col items-center justify-center">
-            <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
-            <h3 className="text-sm font-medium text-muted-foreground">Loading your projects...</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-36 rounded-2xl border border-border bg-card animate-pulse" />
+            ))}
           </div>
-        ) : filteredStoryboards.length === 0 ? (
-          <div className="glass-panel rounded-3xl border-dashed p-16 text-center flex flex-col items-center">
-            <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
-              <FolderOpen className="h-8 w-8 text-muted-foreground" />
+        ) : storyboards.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border p-8 text-center bg-card/40 space-y-3">
+            <div className="w-10 h-10 rounded-2xl bg-secondary text-primary mx-auto flex items-center justify-center">
+              <Folder className="h-5 w-5" />
             </div>
-            <h3 className="text-lg font-bold text-foreground mb-1">No projects found</h3>
-            <p className="text-sm text-muted-foreground max-w-sm">We couldn't find any storyboards matching your search term. Try adjusting your filters or create a new one.</p>
-            <Button className="mt-6 rounded-full" onClick={() => router.push("/dashboard/create")}>
-              <Plus className="mr-2 h-4 w-4" /> Create Project
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold text-foreground">No storyboards yet</h3>
+              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                Generate your first shoot plan to see camera directions, scripts, and scene cues here.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              onClick={() => router.push("/dashboard/create")}
+              className="rounded-xl font-bold text-xs bg-primary text-primary-foreground gap-1.5"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Create First Shoot Plan
             </Button>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredStoryboards.map((item) => (
-              <motion.div
-                key={item.id}
-                whileHover={{ y: -4 }}
-                className="group glass-panel rounded-3xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col h-72 border border-border"
-                onClick={() => router.push(`/dashboard/storyboards/${item.id}`)}
-              >
-                {/* Visual Thumbnail */}
-                <div className="h-40 bg-secondary/50 p-4 flex flex-col justify-end relative overflow-hidden">
-                  {item.thumbnail_url && (
-                    <div className="absolute inset-0 z-0">
-                      <img src={item.thumbnail_url} alt={item.title} className="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {storyboards.slice(0, 6).map((sb) => {
+              const scenesCount = sb.scenes?.length || 4
+              const formattedDate = sb.created_at 
+                ? new Date(sb.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                : "Recently"
+
+              return (
+                <Link
+                  key={sb.id}
+                  href={`/dashboard/storyboards/${sb.id}`}
+                  className="group rounded-2xl border border-border bg-card p-5 space-y-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm hover:border-primary/30 flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <Badge variant="secondary" className="text-[10px] font-bold px-2 py-0.5 uppercase tracking-wider bg-secondary text-secondary-foreground border-none">
+                        {sb.platform || "Reels"}
+                      </Badge>
+                      <span className="text-[11px] text-muted-foreground font-medium flex items-center gap-1">
+                        <Clock className="h-3 w-3 text-muted-foreground" />
+                        {sb.duration || 30}s
+                      </span>
                     </div>
-                  )}
-                  
-                  <div className="absolute top-4 left-4 bg-background/80 backdrop-blur-md px-2.5 py-1 rounded-md border border-border text-[10px] font-bold text-foreground z-10">
-                    {item.platform === 'YouTube' ? '16:9' : '9:16'}
-                  </div>
-                  
-                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition duration-200 z-10">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 bg-background/80 backdrop-blur-md rounded-md text-foreground hover:bg-background">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </div>
 
-                  <div className="w-full relative z-10">
-                    <span className="text-[10px] font-bold text-white/80 uppercase tracking-wider block mb-1 drop-shadow-md">Script Preview</span>
-                    <p className="text-white font-medium text-xs leading-snug line-clamp-2 drop-shadow-md">
-                      “{item.idea}”
-                    </p>
-                  </div>
-                </div>
-
-                {/* Info block */}
-                <div className="p-5 flex-1 flex flex-col justify-between bg-card">
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
-                      {item.title}
+                    <h3 className="text-sm font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-snug">
+                      {sb.title || sb.idea || "Untitled Shoot Plan"}
                     </h3>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
-                      <span>{item.platform}</span>
-                      <span>•</span>
-                      <span>{item.duration}s</span>
-                    </div>
                   </div>
 
-                  <div className="flex justify-between items-center pt-3 border-t border-border mt-3">
-                    <div className="flex gap-2">
-                      <Badge variant="secondary" className="font-semibold text-[10px] rounded-md px-2 py-0.5">
-                        {item.tone}
-                      </Badge>
-                      <Badge variant="outline" className="font-semibold text-[10px] rounded-md px-2 py-0.5 border-primary/20 text-primary">
-                        {item.status}
-                      </Badge>
-                    </div>
-                    <span className="text-[10px] text-muted-foreground font-medium">
-                      {new Date(item.created_at).toLocaleDateString()}
+                  <div className="pt-2 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground">
+                    <span className="font-medium text-[11px]">
+                      {scenesCount} scenes planned
+                    </span>
+                    <span className="text-[10px] text-muted-foreground/80 font-medium">
+                      {formattedDate}
                     </span>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </Link>
+              )
+            })}
           </div>
         )}
-      </motion.div>
-    </motion.div>
-  )
-}
+      </section>
 
-function FormatCard({ title, description, icon, onClick }: { title: string; description: string; icon: React.ReactNode; onClick: () => void }) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={onClick}
-      className="glass-panel p-5 rounded-3xl hover:border-primary/50 transition-colors duration-300 cursor-pointer flex flex-col justify-between h-36 select-none group text-left"
-    >
-      <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-        {icon}
-      </div>
-      <div className="mt-4">
-        <h3 className="text-sm font-bold text-foreground">{title}</h3>
-        <p className="text-xs text-muted-foreground font-medium mt-1">{description}</p>
-      </div>
-    </motion.div>
-  )
-}
-
-function StatCard({ title, value, subText, icon }: { title: string; value: React.ReactNode; subText: string; icon: React.ReactNode }) {
-  return (
-    <div className="glass-panel p-6 rounded-3xl relative overflow-hidden group select-none text-left flex flex-col justify-between h-36">
-      <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none group-hover:bg-primary/10 transition-colors duration-500"></div>
-      <div className="flex flex-row items-center justify-between">
-        <h3 className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
-          {title}
-        </h3>
-        <div className="p-2 rounded-xl bg-secondary group-hover:scale-110 transition-transform duration-300">
-          {icon}
+      {/* ── 3. Creator Templates ── */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
+              <TemplateIcon className="h-4 w-4 text-primary" />
+              Creator Blueprints & Templates
+            </h2>
+            <p className="text-xs text-muted-foreground font-medium">
+              Proven video structures optimized for retention and viewer engagement.
+            </p>
+          </div>
+          <Link
+            href="/dashboard/templates"
+            className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+          >
+            Explore all
+            <ArrowRight className="h-3 w-3" />
+          </Link>
         </div>
-      </div>
-      <div>
-        <p className="text-3xl font-bold text-foreground tracking-tight">
-          {value}
-        </p>
-        <p className="text-xs text-muted-foreground font-medium mt-1">
-          {subText}
-        </p>
-      </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {curatedTemplates.map((tpl) => (
+            <div
+              key={tpl.id}
+              className="rounded-2xl border border-border bg-card p-5 space-y-4 flex flex-col justify-between"
+            >
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-primary">
+                    {tpl.category}
+                  </span>
+                  <span className="text-[11px] font-semibold text-muted-foreground">
+                    {tpl.duration}s · {tpl.scenesCount} scenes
+                  </span>
+                </div>
+
+                <h3 className="text-sm font-bold text-foreground">
+                  {tpl.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {tpl.description}
+                </p>
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleUseTemplate(tpl.prompt)}
+                className="w-full rounded-xl text-xs font-bold border-border hover:bg-secondary hover:text-foreground gap-1.5"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Use Blueprint
+              </Button>
+            </div>
+          ))}
+        </div>
+      </section>
+
     </div>
   )
 }
