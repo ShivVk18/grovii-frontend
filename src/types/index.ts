@@ -133,3 +133,27 @@ export interface GenerateStoryboardResponse {
   storyboard_id: string;
   status: string;
 }
+
+/**
+ * Error body returned by the Grovii API (since Phase B).
+ * `detail` is always a human-readable string that can be shown as-is.
+ *   422 validation_error      -> `errors` maps field name to message
+ *   402 insufficient_credits  -> `credits` is the remaining balance
+ *   429 rate_limited          -> `retry_after` seconds (also Retry-After header)
+ *   429 too_many_active_jobs  -> wait for a running generation to finish
+ *   503 daily_limit_reached   -> generation paused until tomorrow (UTC)
+ */
+export type ApiErrorCode =
+  | "validation_error"
+  | "insufficient_credits"
+  | "rate_limited"
+  | "too_many_active_jobs"
+  | "daily_limit_reached";
+
+export interface ApiErrorBody {
+  detail: string;
+  code?: ApiErrorCode;
+  errors?: Record<string, string>;
+  credits?: number;
+  retry_after?: number;
+}
