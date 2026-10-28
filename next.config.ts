@@ -42,6 +42,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Self-contained server for the Docker image (Vercel ignores this).
+  output: "standalone",
   images: {
     remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }],
   },
