@@ -26,12 +26,22 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx tsc --noEmit
+      - name: ESLint (ratchet; fails if errors go up)
+        run: node scripts/check-eslint-baseline.mjs
       - run: npm run test:regressions
       - run: npx playwright install --with-deps chromium
       - name: Browser tests (dev server)
         run: npx playwright test
       - name: Browser tests (production build)
         run: npx next build && E2E_PROD=1 E2E_PORT=3200 npx playwright test
+
+  docker-image:
+    # Docker-based environments (local staging); Vercel builds from source itself.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t grovii-frontend:ci .
+      - run: test "$(docker run --rm --entrypoint id grovii-frontend:ci -u)" = "10001"
 
   audit:
     runs-on: ubuntu-24.04

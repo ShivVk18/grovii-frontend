@@ -1,0 +1,4 @@
+{
+  "_comment": "Known ESLint errors in pages not yet cleaned up. CI fails if this goes up.",
+  "errors": 19
+}
