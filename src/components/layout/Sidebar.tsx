@@ -16,7 +16,6 @@ import {
 } from "react-icons/hi2"
 import { useAuth } from "@/contexts/AuthContext"
 import { toast } from "sonner"
-import { Badge } from "@/components/ui/badge"
 
 const navItems = [
   { name: "Home", href: "/dashboard", icon: HomeIcon },
@@ -51,9 +50,6 @@ export function Sidebar() {
           <div className="flex flex-col">
             <span className="font-extrabold text-base tracking-tight text-foreground flex items-center gap-1.5">
               Grovii
-              <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-primary/25 text-primary font-bold">
-                PRO
-              </Badge>
             </span>
             <span className="text-[11px] text-muted-foreground font-medium">
               Your shoot planner

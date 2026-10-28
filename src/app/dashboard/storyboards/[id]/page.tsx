@@ -223,8 +223,9 @@ export default function StoryboardDetailsPage() {
     tabRefs.current[tabs[next].id]?.focus()
   }
 
-  const copyButton = (text: string, k: string, label = "Copy") => (
-    <CopyTextButton copied={copiedKey === k} label={label} onCopy={() => copyToClipboard(text, k)} />
+  const copyButton = (text: string, k: string, label = "Copy", accessibleName?: string) => (
+    <CopyTextButton copied={copiedKey === k} label={label} accessibleName={accessibleName}
+      onCopy={() => copyToClipboard(text, k)} />
   )
 
   return (
@@ -360,7 +361,7 @@ export default function StoryboardDetailsPage() {
                   <h2 className="text-xs font-extrabold uppercase tracking-wider text-primary flex items-center gap-1.5">
                     <SparklesIcon className="h-4 w-4" aria-hidden /> Opening hook (first 3 seconds)
                   </h2>
-                  {copyButton(storyboard.hook, "main-hook")}
+                  {copyButton(storyboard.hook, "main-hook", "Copy", "Copy hook")}
                 </div>
                 <p className="text-base sm:text-lg font-bold text-foreground leading-snug">“{storyboard.hook}”</p>
               </div>
@@ -419,7 +420,7 @@ export default function StoryboardDetailsPage() {
                             <h4 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
                               <VoiceIcon className="h-3.5 w-3.5 text-primary" aria-hidden /> What to say
                             </h4>
-                            {voiceover && copyButton(voiceover, `vo-${s.id || idx}`)}
+                            {voiceover && copyButton(voiceover, `vo-${s.id || idx}`, "Copy", `Copy what to say in scene ${s.scene_number || idx + 1}`)}
                           </div>
                           <p className="text-sm font-semibold text-foreground italic leading-relaxed pt-1">
                             {voiceover ? `“${voiceover}”` : "No voiceover: let the visuals and music carry this beat."}
@@ -659,7 +660,7 @@ export default function StoryboardDetailsPage() {
                     <li key={f.key} className="p-6 rounded-2xl bg-secondary/30 border border-border/60 space-y-3">
                       <div className="flex items-center justify-between">
                         <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">{f.label}</h3>
-                        {text && copyButton(text, `rp-${f.key}`, `Copy ${f.label.toLowerCase()}`)}
+                        {text && copyButton(text, `rp-${f.key}`, "Copy", `Copy ${f.label}`)}
                       </div>
                       {text ? (
                         <p className="p-4 rounded-xl bg-card border border-border text-sm leading-relaxed text-foreground whitespace-pre-wrap">{text}</p>
@@ -678,10 +679,13 @@ export default function StoryboardDetailsPage() {
   )
 }
 
-function CopyTextButton({ copied, label, onCopy }: { copied: boolean; label: string; onCopy: () => void }) {
+function CopyTextButton({ copied, label, accessibleName, onCopy }: {
+  copied: boolean; label: string; accessibleName?: string; onCopy: () => void
+}) {
   return (
     <button
       type="button"
+      aria-label={accessibleName}
       onClick={onCopy}
       className="text-xs font-bold text-primary hover:underline flex items-center gap-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >
