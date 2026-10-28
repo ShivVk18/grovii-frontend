@@ -15,6 +15,7 @@ import { storyboardService } from "@/services/storyboardService"
 import { useJobPolling } from "@/hooks/useJobPolling"
 import { apiErrorMessage, statusOf } from "@/lib/apiErrors"
 import { displayProgress, stageFor } from "@/lib/generationProgress"
+import { supportLine } from "@/lib/support"
 
 /**
  * Follows one generation by its id from the URL (?job=...), so a refresh or a
@@ -92,6 +93,7 @@ export function GenerationProgress({ jobId }: { jobId: string }) {
             {job?.error_message || "Something went wrong while generating. Please try again."}
           </p>
           {actionError && <p className="text-sm font-semibold text-destructive">{actionError}</p>}
+          <p className="text-xs text-muted-foreground">{supportLine()}</p>
         </div>
         <div className="flex items-center justify-center gap-3 flex-wrap">
           <Button onClick={retry} disabled={busy !== null} className="rounded-xl font-bold">

@@ -50,6 +50,8 @@ const Footer = () => {
               <h4 className="font-extrabold text-foreground uppercase text-[10px] tracking-widest">Workspace</h4>
               <ul className="space-y-2">
                 <li><Link href="/dashboard" className="hover:text-foreground transition-colors">Launch Studio App</Link></li>
+                <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link></li>
+                <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link></li>
               </ul>
             </div>
           </div>

@@ -253,9 +253,9 @@ export default function SignUpForm() {
 
             <p className="text-center text-xs text-[#8B5E3C]/40 font-medium">
               By creating an account you agree to our{" "}
-              <a href="#" className="underline underline-offset-2 hover:text-[#8B5E3C] transition-colors">Terms</a>
+              <Link href="/terms" className="underline underline-offset-2 hover:text-[#8B5E3C] transition-colors">Terms</Link>
               {" "}and{" "}
-              <a href="#" className="underline underline-offset-2 hover:text-[#8B5E3C] transition-colors">Privacy Policy</a>.
+              <Link href="/privacy" className="underline underline-offset-2 hover:text-[#8B5E3C] transition-colors">Privacy Policy</Link>.
             </p>
           </div>
         </motion.div>

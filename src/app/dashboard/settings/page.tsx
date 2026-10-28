@@ -332,10 +332,10 @@ export default function SettingsPage() {
 
             <Button 
               variant="outline" 
-              onClick={() => toast.info("Subscriptions are launching soon! All creators currently enjoy full studio workspace access.")}
+              onClick={() => toast.info("Paid plans aren't available yet.")}
               className="rounded-full border-primary/20 text-foreground hover:bg-primary/10 font-bold text-xs px-6 py-5 h-11 shadow-sm transition"
             >
-              Subscriptions Coming Soon
+              Paid plans: not available yet
             </Button>
           </div>
 
@@ -355,7 +355,7 @@ export default function SettingsPage() {
             </div>
             
             <p className="text-xs text-muted-foreground font-medium leading-relaxed mt-2">
-              Credits reset every billing cycle. Upgrade to Pro for unlimited canvas storyboards, high-resolution scenes, and custom integrations.
+              Each generation uses one credit. Failed generations are refunded automatically. Paid plans aren&apos;t available yet.
             </p>
           </div>
         </div>
