@@ -36,8 +36,8 @@ export default function SignInForm() {
   const onSubmit = async (data: SignInValues) => {
     setError(null);
     try {
-      const response = await authService.login(data);
-      await login(response.access_token);
+      await authService.login(data);  // sets the httpOnly session cookie
+      await login();
       router.push(next ?? '/dashboard');
     } catch (err) {
       setError(apiErrorMessage(err, "Invalid email or password. Please try again."));

@@ -40,8 +40,8 @@ export function TopHeader() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()  // revokes the session on the server
     toast.success("Logged out successfully")
     router.push("/sign-in")
   }

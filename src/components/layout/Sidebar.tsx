@@ -31,8 +31,8 @@ export function Sidebar() {
   const router = useRouter()
   const { user, logout } = useAuth()
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()  // revokes the session on the server
     toast.success("Logged out successfully")
     router.push("/sign-in")
   }

@@ -3,6 +3,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
 import { User } from '../types';
 import { authService } from '../services/authService';
+import { SIGNED_IN_HINT } from '../services/api';
 import { isNetworkError, statusOf } from '@/lib/apiErrors';
 
 /** Why there is no signed-in user. */
@@ -13,8 +14,11 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   problem: AuthProblem;
-  login: (token: string) => Promise<void>;
-  logout: () => void;
+  /** Call after the API accepted the credentials (the cookie is already set). */
+  login: () => Promise<void>;
+  logout: () => Promise<void>;
+  /** Re-read the user (after a profile change). */
+  refresh: () => Promise<void>;
   retry: () => void;
 }
 
@@ -26,25 +30,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [problem, setProblem] = useState<AuthProblem>(null);
 
   const initAuth = useCallback(async () => {
-    const token = localStorage.getItem('grovii_auth_token');
-    if (!token) {
-      setProblem('signed-out');
-      setIsLoading(false);
-      return;
+    // The session is an httpOnly cookie the page can't read, so ask the API.
+    let hadSession = false;
+    try {
+      hadSession = localStorage.getItem(SIGNED_IN_HINT) === '1';
+    } catch {
+      /* ignore */
     }
     try {
       setUser(await authService.getMe());
       setProblem(null);
     } catch (error) {
       setUser(null);
-      // 401: the API client already cleared the token. Anything else (offline,
-      // server down) keeps the session so a blip doesn't sign the creator out.
-      if (statusOf(error) === 401) setProblem('expired');
+      // Offline or server down keeps the session: a blip doesn't sign out.
+      if (statusOf(error) === 401) setProblem(hadSession ? 'expired' : 'signed-out');
       else if (isNetworkError(error) || (statusOf(error) ?? 0) >= 500) setProblem('unreachable');
-      else {
-        localStorage.removeItem('grovii_auth_token');
-        setProblem('signed-out');
-      }
+      else setProblem('signed-out');
     } finally {
       setIsLoading(false);
     }
@@ -55,17 +56,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void initAuth();
   }, [initAuth]);
 
-  const login = async (token: string) => {
-    localStorage.setItem('grovii_auth_token', token);
+  const login = async () => {
     const userData = await authService.getMe();
     setUser(userData);
     setProblem(null);
   };
 
-  const logout = () => {
-    authService.logout();
+  const logout = async () => {
+    try {
+      await authService.logout();
+    } catch {
+      /* the cookie may already be invalid; local data is cleared either way */
+    }
     setUser(null);
     setProblem('signed-out');
+  };
+
+  const refresh = async () => {
+    setUser(await authService.getMe());
   };
 
   const retry = () => {
@@ -74,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, problem, login, logout, retry }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, problem, login, logout, retry, refresh }}>
       {children}
     </AuthContext.Provider>
   );
