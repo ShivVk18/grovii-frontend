@@ -88,7 +88,13 @@ test("polling backs off instead of hammering the API every 2 seconds", async ({ 
   await startGeneration(page);
   await expect(page.locator("main").getByRole("status")).toContainText(/Planning/i);
   const before = api.jobPolls;
-  await page.clock.runFor(120_000);
+  // Advance 2 minutes of fake time in 1 s steps, letting each poll's (real)
+  // network round trip finish before moving on. One big jump let slow CI
+  // runners skip polls whose next timer was only set after the jump ended.
+  for (let i = 0; i < 120; i++) {
+    await page.clock.runFor(1_000);
+    await page.waitForTimeout(25); // real time, outside the page's fake clock
+  }
   const polls = api.jobPolls - before;
   // A fixed 2s interval would poll 60 times in 2 minutes; backoff to 10s caps it near 15.
   expect(polls).toBeGreaterThan(5);
