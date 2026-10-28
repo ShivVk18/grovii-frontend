@@ -32,6 +32,9 @@ export interface Scene {
   scene_number: number;
   title: string;
   duration: string;
+  /** Seconds from the start of the video (Phase D). */
+  start_seconds?: number;
+  end_seconds?: number;
   what_to_show?: string;
   voiceover_example?: string;
   onscreen_text?: string;
@@ -59,6 +62,9 @@ export interface MusicItem {
   song_name?: string;
   artist?: string;
   why_fits?: string;
+  /** Always false: suggestions are unverified style references (Phase D). */
+  verified?: boolean;
+  licensing_note?: string;
   best_scene?: string;
   mood?: string;
   platform_popularity?: string;
@@ -81,6 +87,12 @@ export interface Storyboard {
   duration: number;
   platform: string;
   language?: string;
+  /** Creator constraints the plan respected (Phase D). */
+  constraints?: { faceless: boolean; location?: string | null; equipment?: string | null } | null;
+  /** For broad ideas: the concrete example the planner chose (Phase D). */
+  brief_choice?: string | null;
+  /** Plain-language note for partial/failed storyboards or missing parts. */
+  status_reason?: string | null;
   status: string;
   hook?: string;
   script?: string;
@@ -106,6 +118,10 @@ export interface CreateStoryboardRequest {
   duration: number;
   platform: string;
   language?: string;
+  /** Optional creator constraints (Phase D). */
+  faceless?: boolean;
+  location?: string;
+  equipment?: string;
 }
 
 export interface AIResult {
