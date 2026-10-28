@@ -19,11 +19,14 @@ export function statusOf(error: unknown): number | undefined {
 
 /**
  * A sentence a creator can read. The API's `detail` is already user-safe since
- * Phase B; anything else falls back to a plain message (never a stack trace).
+ * Phase B for 4xx; 5xx and anything else fall back to a plain message (never a stack trace).
  */
 export function apiErrorMessage(error: unknown, fallback = "Something went wrong. Please try again."): string {
   if (isNetworkError(error)) return "Can't reach Grovii right now. Check your connection and try again.";
   const data = (error as MaybeAxiosError)?.response?.data as Partial<ApiErrorBody> | undefined;
+  // 5xx bodies may carry internal text. Only show them when the backend marked
+  // the error as deliberate with a `code` (e.g. 503 daily_limit_reached).
+  if ((statusOf(error) ?? 0) >= 500 && !data?.code) return fallback;
   if (data && typeof data.detail === "string" && data.detail.trim()) return data.detail;
   return fallback;
 }

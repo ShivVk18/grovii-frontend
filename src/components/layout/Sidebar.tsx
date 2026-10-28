@@ -11,7 +11,8 @@ import {
   HiChartBar as InsightsIcon,
   HiCog6Tooth as SettingsIcon,
   HiArrowRightOnRectangle as LogoutIcon,
-  HiSparkles as SparklesIcon
+  HiSparkles as SparklesIcon,
+  HiClock as HistoryIcon
 } from "react-icons/hi2"
 import { useAuth } from "@/contexts/AuthContext"
 import { toast } from "sonner"
@@ -21,6 +22,7 @@ const navItems = [
   { name: "Home", href: "/dashboard", icon: HomeIcon },
   { name: "Create", href: "/dashboard/create", icon: CreateIcon },
   { name: "My Storyboards", href: "/dashboard/storyboards", icon: StoryboardIcon },
+  { name: "Generations", href: "/dashboard/jobs", icon: HistoryIcon },
   { name: "Templates", href: "/dashboard/templates", icon: TemplateIcon },
   { name: "Insights", href: "/dashboard/analytics", icon: InsightsIcon },
 ]
@@ -54,7 +56,7 @@ export function Sidebar() {
               </Badge>
             </span>
             <span className="text-[11px] text-muted-foreground font-medium">
-              Your AI Director
+              Your shoot planner
             </span>
           </div>
         </Link>

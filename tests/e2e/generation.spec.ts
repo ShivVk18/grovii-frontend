@@ -134,3 +134,21 @@ test("non-field API errors (no credits) are shown as a message, form kept", asyn
   await expect(page.locator("main").getByRole("alert")).toContainText("You're out of credits.");
   await expect(page.getByLabel("Your video idea")).toHaveValue(IDEA);
 });
+
+test("deliberate 503 (daily limit) message is shown; raw 500 text is not", async ({ page }) => {
+  await mockApi(page, {
+    generateError: { status: 503, body: { detail: "Generation is paused until tomorrow.", code: "daily_limit_reached" } },
+  });
+  await startGeneration(page);
+  await expect(page.locator("main").getByRole("alert")).toContainText("Generation is paused until tomorrow.");
+});
+
+test("raw 500 error text is never shown to the creator", async ({ page }) => {
+  await mockApi(page, {
+    generateError: { status: 500, body: { detail: "psycopg2.OperationalError: connection refused" } },
+  });
+  await startGeneration(page);
+  const alert = page.locator("main").getByRole("alert");
+  await expect(alert).toContainText(/Couldn.t start your shoot plan/);
+  await expect(alert).not.toContainText("psycopg2");
+});

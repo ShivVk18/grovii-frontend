@@ -59,14 +59,17 @@ export default function DashboardPage() {
   const [quickIdea, setQuickIdea] = useState("")
   const [storyboards, setStoryboards] = useState<Storyboard[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
     const fetchStoryboards = async () => {
       try {
         const data = await storyboardService.getStoryboards()
         setStoryboards(data)
-      } catch (error) {
-        console.error("Failed to fetch storyboards", error)
+        setLoadError(false)
+      } catch {
+        // Shown as an error state below, not as "no storyboards yet".
+        setLoadError(true)
       } finally {
         setLoading(false)
       }
@@ -98,7 +101,7 @@ export default function DashboardPage() {
         <div className="relative z-10 max-w-2xl space-y-4">
           <div className="space-y-1.5">
             <span className="text-xs font-bold text-primary tracking-wide uppercase">
-              AI Director Workspace
+              Creator Studio
             </span>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
               What are you creating today, {user?.username || 'Creator'}?
@@ -186,6 +189,11 @@ export default function DashboardPage() {
               <div key={i} className="h-36 rounded-2xl border border-border bg-card animate-pulse" />
             ))}
           </div>
+        ) : loadError ? (
+          <div className="rounded-2xl border border-border p-8 text-center bg-card/40 space-y-3">
+            <p role="alert" className="text-sm font-semibold text-foreground">We couldn&apos;t load your recent storyboards.</p>
+            <Button size="sm" onClick={() => window.location.reload()} className="rounded-xl text-xs font-bold">Try again</Button>
+          </div>
         ) : storyboards.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border p-8 text-center bg-card/40 space-y-3">
             <div className="w-10 h-10 rounded-2xl bg-secondary text-primary mx-auto flex items-center justify-center">
@@ -209,7 +217,6 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {storyboards.slice(0, 6).map((sb) => {
-              const scenesCount = sb.scenes?.length || 4
               const formattedDate = sb.created_at 
                 ? new Date(sb.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
                 : "Recently"
@@ -237,8 +244,8 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="pt-2 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground">
-                    <span className="font-medium text-[11px]">
-                      {scenesCount} scenes planned
+                    <span className="font-medium text-[11px] capitalize">
+                      {sb.tone || ""}
                     </span>
                     <span className="text-[10px] text-muted-foreground/80 font-medium">
                       {formattedDate}

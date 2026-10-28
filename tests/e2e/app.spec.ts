@@ -64,3 +64,21 @@ for (const [name, path] of [
     expect(bad.map((v) => `${v.id}: ${v.nodes.length} (${v.nodes[0]?.target})`)).toEqual([]);
   });
 }
+
+test("home and storyboards list show an error (not 'no storyboards') when loading fails", async ({ page }) => {
+  await mockApi(page);
+  await page.route("http://api.grovii.test/storyboards", (r) =>
+    r.fulfill({ status: 500, contentType: "application/json", body: '{"detail":"Internal error"}' }));
+  await page.goto("/dashboard/storyboards");
+  await expect(page.locator("main").getByRole("alert")).toContainText(/couldn.t load/i);
+  await expect(page.getByText(/No storyboards yet/i)).toHaveCount(0);
+  await page.goto("/dashboard");
+  await expect(page.locator("main").getByRole("alert")).toContainText(/couldn.t load/i);
+});
+
+test("history is reachable from the sidebar", async ({ page }) => {
+  await mockApi(page);
+  await page.goto("/dashboard");
+  await page.getByRole("link", { name: "Generations" }).click();
+  await expect(page).toHaveURL(/\/dashboard\/jobs/);
+});
