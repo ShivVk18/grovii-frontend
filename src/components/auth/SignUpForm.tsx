@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { HiFire as Flame, HiEye as Eye, HiEyeSlash as EyeOff, HiExclamationCircle as AlertCircle, HiCheck as Check } from "react-icons/hi2";
 import { signUpSchema, SignUpValues } from "@/schemas/authSchema";
 import { authService } from "@/services/authService";
+import { apiErrorMessage } from "@/lib/apiErrors";
 
 const perks = [
   "3 free storyboard generations daily",
@@ -42,8 +43,8 @@ export default function SignUpForm() {
         password: data.password,
       });
       router.push('/sign-in?registered=true');
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Registration failed. Please try again.");
+    } catch (err) {
+      setError(apiErrorMessage(err, "Registration failed. Please try again."));
     }
   };
 

@@ -101,12 +101,32 @@ export interface Storyboard {
   created_at: string;
   updated_at: string;
   scenes?: Scene[];
-  captions?: any[];
-  hashtags?: any[];
-  hooks?: any[];
+  captions?: { id: string; caption: string }[];
+  hashtags?: { id: string; hashtag: string }[];
+  hooks?: { id: string; hook: string; selected: boolean }[];
   music?: MusicItem[];
-  trends?: any[];
-  repurpose?: any;
+  trends?: TrendItem[];
+  repurpose?: RepurposeContent | null;
+}
+
+/** Posting guidance generated per storyboard (backend TrendResponse). */
+export interface TrendItem {
+  id: string;
+  posting_time?: string | null;
+  editing_style?: string | null;
+  content_gap?: string | null;
+  transitions?: string[] | null;
+  sounds?: string[] | null;
+}
+
+/** Written posts made from the video idea (backend RepurposeResponse). */
+export interface RepurposeContent {
+  id: string;
+  linkedin?: string | null;
+  twitter?: string | null;
+  carousel?: string | null;
+  blog?: string | null;
+  newsletter?: string | null;
 }
 
 export interface CreateStoryboardRequest {
@@ -122,26 +142,6 @@ export interface CreateStoryboardRequest {
   faceless?: boolean;
   location?: string;
   equipment?: string;
-}
-
-export interface AIResult {
-  idea: string;
-  goal: string;
-  tone: string;
-  style: string;
-  audience: string;
-  duration: number;
-  platform: string;
-  hook: string;
-  scenes: any[];
-  script: string;
-  captions: any[];
-  hashtags: any[];
-  regenerated_hooks: any[];
-  trends: any;
-  scene_music: any[];
-  repurposed_content: any;
-  thumbnail_url: string;
 }
 
 export interface GenerateStoryboardResponse {

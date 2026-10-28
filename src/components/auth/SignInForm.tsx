@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -13,9 +13,14 @@ import { HiFire as Flame, HiEye as Eye, HiEyeSlash as EyeOff, HiExclamationCircl
 import { signInSchema, SignInValues } from "@/schemas/authSchema";
 import { authService } from "@/services/authService";
 import { useAuth } from "@/contexts/AuthContext";
+import { safeNextPath } from "@/lib/session";
+import { apiErrorMessage } from "@/lib/apiErrors";
 
 export default function SignInForm() {
   const router = useRouter();
+  const params = useSearchParams();
+  const expired = params.get("expired") === "1";
+  const next = safeNextPath(params.get("next"));
   const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -33,9 +38,9 @@ export default function SignInForm() {
     try {
       const response = await authService.login(data);
       await login(response.access_token);
-      router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Invalid email or password. Please try again.");
+      router.push(next ?? '/dashboard');
+    } catch (err) {
+      setError(apiErrorMessage(err, "Invalid email or password. Please try again."));
     }
   };
 
@@ -82,6 +87,13 @@ export default function SignInForm() {
               </p>
             </div>
 
+            {expired && !error && (
+              <div role="status" className="flex items-start gap-3 p-4 rounded-2xl bg-amber-50 border border-amber-200/80 text-sm text-amber-900 font-medium">
+                <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" aria-hidden />
+                Your session expired. Please sign in again{next ? " to pick up where you left off" : ""}.
+              </div>
+            )}
+
             {/* Error */}
             <AnimatePresence>
               {error && (
@@ -89,7 +101,8 @@ export default function SignInForm() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="flex items-start gap-3 p-4 rounded-2xl bg-red-50 border border-red-200/60 text-sm text-red-600 font-medium"
+                  role="alert"
+                  className="flex items-start gap-3 p-4 rounded-2xl bg-red-50 border border-red-200/60 text-sm text-red-700 font-medium"
                 >
                   <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                   {error}
@@ -180,7 +193,7 @@ export default function SignInForm() {
 
             {/* Sign up link */}
             <p className="text-center text-sm font-medium text-[#7A5C45]/70">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/sign-up" className="font-bold text-[#8B5E3C] hover:text-[#5C4033] transition-colors underline-offset-2 hover:underline">
                 Sign Up Free
               </Link>

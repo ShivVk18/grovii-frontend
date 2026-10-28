@@ -16,6 +16,8 @@ import {
 import { toast } from "sonner"
 import { storyboardService } from "@/services/storyboardService"
 import { Storyboard } from "@/types"
+import { apiErrorMessage } from "@/lib/apiErrors"
+import { forgetPlan } from "@/lib/savedPlans"
 
 export default function StoryboardsPage() {
   const router = useRouter()
@@ -23,21 +25,24 @@ export default function StoryboardsPage() {
   const [filterPlatform, setFilterPlatform] = useState<string>("all")
   const [storyboards, setStoryboards] = useState<Storyboard[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const fetchStoryboards = async () => {
     setLoading(true)
     try {
       const data = await storyboardService.getStoryboards()
       setStoryboards(data)
+      setLoadError(null)
     } catch (error) {
-      console.error("Failed to fetch storyboards", error)
+      setLoadError(apiErrorMessage(error, "We couldn't load your storyboards."))
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchStoryboards()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchStoryboards()
   }, [])
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
@@ -47,10 +52,11 @@ export default function StoryboardsPage() {
       try {
         await storyboardService.deleteStoryboard(id)
         setStoryboards(storyboards.filter((s) => s.id !== id))
+        forgetPlan(id)
         toast.success("Shoot plan deleted")
       } catch (error) {
         console.error("Failed to delete storyboard", error)
-        toast.error("Failed to delete storyboard")
+        toast.error(apiErrorMessage(error, "Couldn't delete this shoot plan."))
       }
     }
   }
@@ -62,7 +68,7 @@ export default function StoryboardsPage() {
   })
 
   return (
-    <div className="space-y-8 pb-16 select-none">
+    <div className="space-y-8 pb-16">
       
       {/* ── Top Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -87,8 +93,9 @@ export default function StoryboardsPage() {
       {/* ── Search & Filter Controls ── */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden />
           <Input
+            aria-label="Search your storyboards"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by topic, hook, or keyword..."
@@ -96,16 +103,18 @@ export default function StoryboardsPage() {
           />
         </div>
 
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+        <div role="group" aria-label="Filter by platform" className="flex items-center gap-1.5 overflow-x-auto pb-1">
           {["all", "reels", "tiktok", "shorts"].map((p) => (
             <button
               key={p}
+              type="button"
+              aria-pressed={filterPlatform === p}
               onClick={() => setFilterPlatform(p)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${
                 filterPlatform === p
                   ? "bg-primary text-primary-foreground font-bold"
-                  : "bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground border border-border/60"
-              }`}
+                  : "bg-secondary/60 hover:bg-secondary text-foreground/80 hover:text-foreground border border-border/60"
+              } focus:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
             >
               {p === "all" ? "All Platforms" : p}
             </button>
@@ -114,8 +123,13 @@ export default function StoryboardsPage() {
       </div>
 
       {/* ── Projects Grid ── */}
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {loadError && !loading ? (
+        <div className="rounded-3xl border border-border p-10 text-center bg-card space-y-3">
+          <p role="alert" className="text-sm font-semibold text-foreground">{loadError}</p>
+          <Button onClick={() => void fetchStoryboards()} className="rounded-xl text-xs font-bold">Try again</Button>
+        </div>
+      ) : loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" role="status" aria-label="Loading your storyboards">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="h-44 rounded-2xl border border-border bg-card animate-pulse" />
           ))}
@@ -126,7 +140,7 @@ export default function StoryboardsPage() {
             <FilmIcon className="h-5 w-5" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-sm font-bold text-foreground">No storyboards found</h3>
+            <h2 className="text-sm font-bold text-foreground">{searchQuery || filterPlatform !== "all" ? "No storyboards match" : "No storyboards yet"}</h2>
             <p className="text-xs text-muted-foreground max-w-sm mx-auto">
               {searchQuery ? "No shoot plans match your query. Try clearing filters." : "Create your first storyboard to get camera directions and scripts."}
             </p>
@@ -143,16 +157,14 @@ export default function StoryboardsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((item) => {
-            const scenesCount = item.scenes?.length || 4
             const formattedDate = item.created_at
               ? new Date(item.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
               : "Recently"
 
             return (
-              <Link
+              <div
                 key={item.id}
-                href={`/dashboard/storyboards/${item.id}`}
-                className="group rounded-3xl border border-border bg-card p-5 space-y-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm hover:border-primary/30 flex flex-col justify-between"
+                className="group relative rounded-3xl border border-border bg-card p-5 space-y-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm hover:border-primary/30 focus-within:ring-2 focus-within:ring-primary flex flex-col justify-between"
               >
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between gap-2">
@@ -162,22 +174,27 @@ export default function StoryboardsPage() {
                     
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] text-muted-foreground font-medium flex items-center gap-1">
-                        <Clock className="h-3 w-3 text-muted-foreground" />
+                        <Clock className="h-3 w-3 text-muted-foreground" aria-hidden />
                         {item.duration || 30}s
                       </span>
                       <button
+                        type="button"
                         onClick={(e) => handleDelete(item.id, e)}
+                        aria-label={`Delete ${item.title || "this storyboard"}`}
                         title="Delete storyboard"
-                        className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+                        className="relative z-10 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 p-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-3.5 w-3.5" aria-hidden />
                       </button>
                     </div>
                   </div>
 
-                  <h3 className="text-sm font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-snug">
-                    {item.title || item.idea || "Untitled Shoot Plan"}
-                  </h3>
+                  <h2 className="text-sm font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-snug">
+                    {/* Stretched link: the whole card opens the plan; the delete button sits above it. */}
+                    <Link href={`/dashboard/storyboards/${item.id}`} className="after:absolute after:inset-0 focus:outline-none">
+                      {item.title || item.idea || "Untitled Shoot Plan"}
+                    </Link>
+                  </h2>
 
                   {item.hook && (
                     <p className="text-xs text-muted-foreground italic line-clamp-2 leading-relaxed">
@@ -187,12 +204,10 @@ export default function StoryboardsPage() {
                 </div>
 
                 <div className="pt-3 border-t border-border/60 flex items-center justify-between text-[11px] text-muted-foreground">
-                  <span className="font-semibold text-foreground">
-                    {scenesCount} scenes planned
-                  </span>
+                  <span className="font-semibold text-foreground capitalize">{item.tone || ""}</span>
                   <span>{formattedDate}</span>
                 </div>
-              </Link>
+              </div>
             )
           })}
         </div>

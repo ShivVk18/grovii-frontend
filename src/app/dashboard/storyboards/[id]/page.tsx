@@ -30,20 +30,11 @@ import { toast } from "sonner"
 import { storyboardService } from "@/services/storyboardService"
 import { statusOf } from "@/lib/apiErrors"
 import { loadPlan, savePlan } from "@/lib/savedPlans"
-import type { MusicItem, Scene, Storyboard } from "@/types"
+import type { MusicItem, RepurposeContent, Scene, Storyboard, TrendItem } from "@/types"
 
 type TabId = "scenes" | "script" | "shotlist" | "audio" | "captions" | "tips" | "repurpose"
 
-type Trend = {
-  id?: string
-  posting_time?: string | null
-  editing_style?: string | null
-  content_gap?: string | null
-  transitions?: string[] | null
-  sounds?: string[] | null
-}
-
-type Repurpose = Partial<Record<"linkedin" | "twitter" | "carousel" | "blog" | "newsletter", string | null>>
+type Repurpose = Omit<RepurposeContent, "id">
 
 const REPURPOSE_FORMATS: { key: keyof Repurpose; label: string; empty: string }[] = [
   { key: "linkedin", label: "LinkedIn post", empty: "No LinkedIn post was generated for this plan." },
@@ -207,8 +198,8 @@ export default function StoryboardDetailsPage() {
 
   const scenes: Scene[] = storyboard.scenes || []
   const music: MusicItem[] = storyboard.music || []
-  const trends: Trend[] = (storyboard.trends || []) as Trend[]
-  const repurpose: Repurpose = (storyboard.repurpose || {}) as Repurpose
+  const trends: TrendItem[] = storyboard.trends || []
+  const repurpose: Repurpose = storyboard.repurpose || {}
   const constraints = storyboard.constraints
   const generating = storyboard.status === "queued" || storyboard.status === "running"
   const recorded = Object.values(checkedShots).filter(Boolean).length
@@ -584,7 +575,7 @@ export default function StoryboardDetailsPage() {
                 <p className="text-sm text-muted-foreground py-4">No captions were generated for this plan.</p>
               ) : (
                 <ul className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {storyboard.captions.map((c: { id?: string; caption: string }, idx: number) => (
+                  {storyboard.captions.map((c, idx) => (
                     <li key={c.id || idx} className="p-5 rounded-2xl bg-secondary/30 border border-border/60 flex flex-col justify-between gap-4">
                       <div className="space-y-1">
                         <h3 className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">Option {idx + 1}</h3>
@@ -605,13 +596,13 @@ export default function StoryboardDetailsPage() {
               <div className="flex items-center justify-between pb-3 border-b border-border">
                 <h2 className="text-base font-bold text-foreground">Hashtags</h2>
                 {storyboard.hashtags && storyboard.hashtags.length > 0 &&
-                  copyButton(storyboard.hashtags.map((h: { hashtag: string }) => h.hashtag).join(" "), "all-tags", "Copy all")}
+                  copyButton(storyboard.hashtags.map((h) => h.hashtag).join(" "), "all-tags", "Copy all")}
               </div>
               {!storyboard.hashtags || storyboard.hashtags.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No hashtags were generated for this plan.</p>
               ) : (
                 <ul className="flex flex-wrap gap-2">
-                  {storyboard.hashtags.map((h: { id?: string; hashtag: string }, idx: number) => (
+                  {storyboard.hashtags.map((h, idx) => (
                     <li key={h.id || idx}>
                       <button type="button" onClick={() => copyToClipboard(h.hashtag, `tag-${idx}`)}
                         aria-label={`Copy ${h.hashtag}`}
