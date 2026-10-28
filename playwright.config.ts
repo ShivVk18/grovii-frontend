@@ -1,11 +1,11 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// Browser tests run the real Next.js app against a MOCKED backend: every call to
-// API_URL is answered by tests/e2e/mockApi.ts. Nothing reaches a real server or LLM.
-export const API_URL = "http://api.grovii.test";
+// Browser tests run the real Next.js app against a MOCKED backend: every call
+// to /api/* is answered in the browser by tests/e2e/mockApi.ts. The proxy target
+// points at a closed port, so nothing can reach a real server or LLM.
+const DEAD_API = "http://127.0.0.1:9";
 const PORT = Number(process.env.E2E_PORT || 3100);
-// E2E_PROD=1 runs against a production build (build it first with
-// NEXT_PUBLIC_API_URL=http://api.grovii.test npx next build).
+// E2E_PROD=1 runs against a production build (run `npx next build` first).
 const PROD = process.env.E2E_PROD === "1";
 
 export default defineConfig({
@@ -25,6 +25,6 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI && !PROD,
     timeout: 180_000,
-    env: { NEXT_PUBLIC_API_URL: API_URL },
+    env: { API_PROXY_TARGET: DEAD_API, PROXY_SHARED_SECRET: "e2e-proxy-secret" },
   },
 });

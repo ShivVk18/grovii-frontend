@@ -5,7 +5,10 @@ import path from "node:path";
 // and the job routes in src/api/storyboard.py), so the UI is tested against the
 // same fields the real API returns.
 
-export const API = "http://api.grovii.test";
+// Since Phase F the browser calls the frontend's own /api path (Next.js
+// proxies it to the API server), so session cookies are first-party.
+export const API = "/api";
+export const API_GLOB = "**/api/**";
 export const EVIDENCE = path.resolve(__dirname, "../../../fix/evidence/phase_e/screens");
 
 export const SB_ID = "5b7c1a2e-0000-4000-8000-00000000a001";
@@ -86,9 +89,20 @@ export interface MockOptions {
   generateError?: { status: number; body: unknown };
   /** Make every request answer 401 (session expired). */
   unauthorized?: boolean;
+  /** Body for 422/403 answers from settings endpoints, keyed by "METHOD path". */
+  errors?: Record<string, { status: number; body: unknown }>;
+}
+
+export interface RecordedRequest {
+  method: string;
+  path: string;
+  headers: Record<string, string>;
+  body: unknown;
 }
 
 export interface MockState {
+  /** Every API request the page made, in order. */
+  requests: RecordedRequest[];
   generateCalls: unknown[];
   jobPolls: number;
   cancelCalls: number;
@@ -110,6 +124,7 @@ export async function mockApi(page: Page, opts: MockOptions = {}): Promise<MockS
   const polls: Record<string, number> = {};
   let jobCounter = 0;
   const state: MockState = {
+    requests: [],
     generateCalls: [],
     jobPolls: 0,
     cancelCalls: 0,
@@ -119,19 +134,43 @@ export async function mockApi(page: Page, opts: MockOptions = {}): Promise<MockS
     },
   };
 
+  // The session itself is an httpOnly cookie the page can't see; the page only
+  // keeps a non-secret "was signed in" hint to word the expiry message.
   await page.addInitScript(() => {
-    if (!localStorage.getItem("grovii_auth_token")) localStorage.setItem("grovii_auth_token", "test-token");
+    if (!localStorage.getItem("grovii_signed_in")) localStorage.setItem("grovii_signed_in", "1");
   });
 
-  await page.route(`${API}/**`, async (route) => {
+  await page.route(API_GLOB, async (route) => {
     const req = route.request();
     const url = new URL(req.url());
-    const p = url.pathname;
+    if (!url.pathname.startsWith("/api/")) return route.fallback();
+    const p = url.pathname.slice(4); // strip the /api proxy prefix
     const method = req.method();
+    let body: unknown = null;
+    try { body = req.postDataJSON(); } catch { body = req.postData(); }
+    state.requests.push({ method, path: p, headers: await req.allHeaders(), body });
 
     if (method === "OPTIONS") return route.fulfill({ status: 204 });
-    if (opts.unauthorized) return json(route, 401, { detail: "Could not validate credentials" });
+    const custom = opts.errors?.[`${method} ${p}`];
+    if (custom) return json(route, custom.status, custom.body);
+    if (opts.unauthorized && p !== "/auth/login") return json(route, 401, { detail: "Please sign in again.", code: "not_authenticated" });
 
+    if (p === "/auth/login" && method === "POST") {
+      return route.fulfill({
+        status: 200, contentType: "application/json", body: JSON.stringify({ message: "Signed in" }),
+        headers: { "set-cookie": "grovii_csrf=csrf-from-login; Path=/; SameSite=Lax" },
+      });
+    }
+    if (p === "/auth/register" && method === "POST") return json(route, 200, { message: "User registered", user_id: "u-2" });
+    if (p === "/auth/logout" && method === "POST") return json(route, 200, { message: "Logout successful" });
+    if (p === "/auth/logout-all" && method === "POST") return json(route, 200, { message: "Signed out of 2 session(s)." });
+    if (p === "/auth/change-password" && method === "POST") return json(route, 200, { message: "Password changed." });
+    if (p === "/auth/me" && method === "PATCH") return json(route, 200, { ...USER, ...(body as object) });
+    if (p === "/auth/me" && method === "DELETE") return json(route, 200, { message: "Deleted" });
+    if (p === "/auth/me/export") {
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ account: USER, storyboards: [] }),
+        headers: { "content-disposition": 'attachment; filename="grovii-my-data.json"' } });
+    }
     if (p === "/auth/me") return json(route, 200, USER);
 
     if (p === "/storyboards/generate" && method === "POST") {

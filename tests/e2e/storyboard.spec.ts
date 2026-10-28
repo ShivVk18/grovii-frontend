@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { mockApi, shot, SB_ID, API } from "./mockApi";
+import { mockApi, shot, SB_ID } from "./mockApi";
 
 const URL_ = `/dashboard/storyboards/${SB_ID}`;
 
@@ -110,7 +110,7 @@ test("offline: a plan opened before still loads from the saved copy", async ({ p
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Morning focus routine");
 
   // Now the network drops: the storyboard request fails outright.
-  await page.route(`${API}/storyboards/${SB_ID}`, (r) => r.abort("internetdisconnected"));
+  await page.route(`**/api/storyboards/${SB_ID}`, (r) => r.abort("internetdisconnected"));
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Morning focus routine");
   await expect(page.getByText(/saved copy/i)).toBeVisible();
@@ -119,7 +119,7 @@ test("offline: a plan opened before still loads from the saved copy", async ({ p
 
 test("load error (not offline, no saved copy) shows a retry, not a blank page", async ({ page }) => {
   await mockApi(page);
-  await page.route(`${API}/storyboards/${SB_ID}`, (r) =>
+  await page.route(`**/api/storyboards/${SB_ID}`, (r) =>
     r.fulfill({ status: 500, contentType: "application/json", body: '{"detail":"Internal error"}' }));
   await page.goto(URL_);
   await expect(page.locator("main").getByRole("alert")).toContainText(/couldn.t load/i);

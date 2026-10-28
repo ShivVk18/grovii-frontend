@@ -67,7 +67,7 @@ for (const [name, path] of [
 
 test("home and storyboards list show an error (not 'no storyboards') when loading fails", async ({ page }) => {
   await mockApi(page);
-  await page.route("http://api.grovii.test/storyboards", (r) =>
+  await page.route("**/api/storyboards", (r) =>
     r.fulfill({ status: 500, contentType: "application/json", body: '{"detail":"Internal error"}' }));
   await page.goto("/dashboard/storyboards");
   await expect(page.locator("main").getByRole("alert")).toContainText(/couldn.t load/i);
