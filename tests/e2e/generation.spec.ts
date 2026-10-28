@@ -33,7 +33,7 @@ test("create: progress is shown in plain words, then the shoot plan opens", asyn
 });
 
 test("refresh during generation resumes progress instead of losing it", async ({ page }) => {
-  const api = await mockApi(page, { jobSteps: [{ status: "running", progress: 45 }] });
+  const api = await mockApi(page, { jobSteps: [{ status: "running", progress: 15 }] });
   await startGeneration(page);
   await expect(page).toHaveURL(/job=/);
   await expect(page.locator("main").getByRole("status")).toContainText(/Planning your scenes/i);
@@ -71,7 +71,7 @@ test("failure: shows a clear message and Try again resubmits the same inputs", a
 
 test("client timeout: after 5 minutes says it is still working, with options", async ({ page }) => {
   await page.clock.install();
-  await mockApi(page, { jobSteps: [{ status: "running", progress: 45 }] });
+  await mockApi(page, { jobSteps: [{ status: "running", progress: 15 }] });
   await startGeneration(page);
   await expect(page.locator("main").getByRole("status")).toContainText(/Planning your scenes/i);
 
@@ -84,7 +84,7 @@ test("client timeout: after 5 minutes says it is still working, with options", a
 
 test("polling backs off instead of hammering the API every 2 seconds", async ({ page }) => {
   await page.clock.install();
-  const api = await mockApi(page, { jobSteps: [{ status: "running", progress: 45 }] });
+  const api = await mockApi(page, { jobSteps: [{ status: "running", progress: 15 }] });
   await startGeneration(page);
   await expect(page.locator("main").getByRole("status")).toContainText(/Planning/i);
   const before = api.jobPolls;

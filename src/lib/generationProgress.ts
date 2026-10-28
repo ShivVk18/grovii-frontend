@@ -1,20 +1,18 @@
 import type { JobStatus } from "@/types";
 
 /**
- * Plain-language progress. The backend reports a percentage after each step
- * (src/services/jobs_services.py PROGRESS): hook 15, scenes 45, script 60,
- * captions 70, hashtags 75, music 80, tips 85, repurpose 90, finishing 95.
- * Each value means "this step just finished", so we name the step now running.
+ * Plain-language progress. The backend reports a percentage as each step
+ * finishes (src/services/jobs_services.py PROGRESS): hook 15, scenes 45,
+ * script 60, then captions/hashtags/music/tips/repurpose (70-90, these run at
+ * the same time and finish in any order), finishing 95. We name what is
+ * running now, and group the parallel steps instead of inventing an order.
  */
 export function stageFor(status: JobStatus | null, progress: number): string {
   if (status === "queued" || status === null) return "Waiting to start…";
   if (status === "completed") return "Your shoot plan is ready!";
   if (progress < 15) return "Writing your hook…";
   if (progress < 45) return "Planning your scenes…";
-  if (progress < 60) return "Putting your script together…";
-  if (progress < 75) return "Writing captions and hashtags…";
-  if (progress < 85) return "Picking music that fits…";
-  if (progress < 90) return "Gathering posting tips…";
+  if (progress < 95) return "Writing captions, hashtags, music ideas and posting tips…";
   return "Finishing touches…";
 }
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { storyboardService, type JobStatusResponse } from "@/services/storyboardService";
 import { statusOf } from "@/lib/apiErrors";
 import {
@@ -28,7 +28,6 @@ export function useJobPolling(jobId: string | null): JobPollState {
   const [unreachable, setUnreachable] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
   const [round, setRound] = useState(0);
-  const lastStatus = useRef<string | null>(null);
 
   useEffect(() => {
     if (!jobId) return;
@@ -37,7 +36,6 @@ export function useJobPolling(jobId: string | null): JobPollState {
     let attempt = 0;
     let failures = 0;
     const started = Date.now();
-    setTimedOut(false);
 
     const tick = async () => {
       try {
@@ -46,7 +44,6 @@ export function useJobPolling(jobId: string | null): JobPollState {
         failures = 0;
         setUnreachable(false);
         setJob(next);
-        lastStatus.current = next.status;
         if (FINISHED.includes(next.status)) return;
       } catch (error) {
         if (stopped) return;
@@ -72,14 +69,10 @@ export function useJobPolling(jobId: string | null): JobPollState {
     };
   }, [jobId, round]);
 
-  // A new job id (e.g. after "Try again") starts fresh.
-  useEffect(() => {
-    setJob(null);
-    setNotFound(false);
-    setUnreachable(false);
-    lastStatus.current = null;
-  }, [jobId]);
-
-  const checkNow = useCallback(() => setRound((r) => r + 1), []);
+  // Callers key the component by job id, so a new job starts with fresh state.
+  const checkNow = useCallback(() => {
+    setTimedOut(false);
+    setRound((r) => r + 1);
+  }, []);
   return { job, notFound, unreachable, timedOut, checkNow };
 }
