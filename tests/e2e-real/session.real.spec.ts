@@ -21,10 +21,12 @@ test("real stack: sign-up, cookie session, CSRF-protected write, export, sign-ou
 
   // The session cookie belongs to the frontend's own origin and is httpOnly.
   const cookies = await context.cookies(baseURL!);
-  const session = cookies.find((c) => c.name === "grovii_session");
+  // "__Host-" prefix in production mode (APP_ENV=production), plain name in dev.
+  const isSession = (n: string) => n === "grovii_session" || n === "__Host-grovii_session";
+  const session = cookies.find((c) => isSession(c.name));
   expect(session?.httpOnly).toBe(true);
   expect(session?.sameSite).toBe("Lax");
-  expect(cookies.find((c) => c.name === "grovii_csrf")?.httpOnly).toBe(false);
+  expect(cookies.find((c) => c.name.endsWith("grovii_csrf"))?.httpOnly).toBe(false);
   expect(await page.evaluate(() => document.cookie)).not.toContain("grovii_session");
 
   // A write through the UI (queues a generation; no worker runs, no LLM is called).
@@ -32,7 +34,9 @@ test("real stack: sign-up, cookie session, CSRF-protected write, export, sign-ou
   await page.getByLabel("Your video idea").fill("A 30 second espresso routine for busy mornings");
   await page.getByRole("button", { name: "Generate shoot plan" }).click();
   await expect(page).toHaveURL(/job=/);
-  await expect(page.locator("main").getByRole("status")).toContainText(/Waiting to start/i);
+  // With a worker running (compose stack) it may already be generating or finished.
+  await expect(page.locator("main")).toContainText(
+    /Waiting to start|Writing your hook|Planning your scenes|couldn.t be finished|ready/i);
 
   // The same write without the CSRF header is refused by the real API.
   const noCsrf = await page.evaluate(async () => {
@@ -62,7 +66,7 @@ test("real stack: sign-up, cookie session, CSRF-protected write, export, sign-ou
   expect(JSON.stringify(data)).not.toContain("hashed_password");
 
   // Sign out revokes the server session: the old cookie no longer works.
-  const old = (await context.cookies(baseURL!)).find((c) => c.name === "grovii_session")!;
+  const old = (await context.cookies(baseURL!)).find((c) => isSession(c.name))!;
   await page.locator("main").getByRole("button", { name: /^log out$/i }).click();
   await expect(page).toHaveURL(/\/sign-in/);
   await context.addCookies([{ ...old }]);

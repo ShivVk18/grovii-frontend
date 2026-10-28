@@ -8,13 +8,17 @@ const API = 8100;
 const SECRET = "real-e2e-proxy-secret-0123456789";
 const BACKEND = process.env.GROVII_BACKEND_DIR || "../grovii-backend";
 
+// REAL_E2E_BASE_URL=http://localhost:3400 runs against an already running stack
+// (e.g. grovii-backend/deploy/docker-compose.yml) instead of starting servers.
+const EXTERNAL = process.env.REAL_E2E_BASE_URL;
+
 export default defineConfig({
   testDir: "tests/e2e-real",
   timeout: 90_000,
   workers: 1,
   reporter: [["list"]],
-  use: { baseURL: `http://localhost:${WEB}`, ...devices["Desktop Chrome"] },
-  webServer: [
+  use: { baseURL: EXTERNAL || `http://localhost:${WEB}`, ...devices["Desktop Chrome"] },
+  webServer: EXTERNAL ? undefined : [
     {
       command: `cd ${BACKEND} && venv/bin/uvicorn src.main:app --port ${API}`,
       url: `http://127.0.0.1:${API}/health`,
