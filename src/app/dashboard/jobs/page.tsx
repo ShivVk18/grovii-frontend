@@ -45,7 +45,7 @@ export default function JobHistoryPage() {
 
     // Poll active jobs list every 5 seconds to show progress updates
     const interval = setInterval(() => {
-      const hasActiveJobs = jobs.some(j => j.status === 'pending' || j.status === 'processing');
+      const hasActiveJobs = jobs.some(j => j.status === 'queued' || j.status === 'running');
       if (hasActiveJobs) {
         fetchJobs();
       }
@@ -170,7 +170,7 @@ export default function JobHistoryPage() {
               </thead>
               <tbody className="divide-y divide-border">
                 {jobs.map((job) => {
-                  const isActive = job.status === "pending" || job.status === "processing";
+                  const isActive = job.status === "queued" || job.status === "running";
                   
                   return (
                     <tr key={job.id} className="hover:bg-secondary/15 transition-colors text-xs font-semibold text-foreground">
@@ -212,7 +212,7 @@ export default function JobHistoryPage() {
                           className={`font-bold text-[9px] rounded-md px-2 py-0.5 ${
                             job.status === "completed" ? "border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5" :
                             job.status === "failed" ? "border-destructive/20 text-destructive bg-destructive/5" :
-                            job.status === "processing" ? "border-amber-500/20 text-amber-600 dark:text-amber-400 bg-amber-500/5 animate-pulse" :
+                            job.status === "running" ? "border-amber-500/20 text-amber-600 dark:text-amber-400 bg-amber-500/5 animate-pulse" :
                             "border-border text-muted-foreground"
                           }`}
                         >

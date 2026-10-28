@@ -157,3 +157,10 @@ export interface ApiErrorBody {
   credits?: number;
   retry_after?: number;
 }
+
+/** Job lifecycle statuses returned by GET /storyboards/jobs/{id} (since Phase C). */
+export type JobStatus = "queued" | "running" | "completed" | "failed" | "cancelled";
+
+/** Storyboard statuses. `partial` = usable but incomplete; see `status_reason`. */
+export type StoryboardStatus =
+  | "draft" | "created" | "queued" | "running" | "completed" | "partial" | "failed" | "cancelled";

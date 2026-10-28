@@ -16,6 +16,7 @@ import {
 } from "react-icons/hi2"
 import { toast } from "sonner"
 import { storyboardService } from "@/services/storyboardService"
+import type { JobStatus } from "@/types"
 
 const durationOptions = [
   { label: "15 sec", value: "15" },
@@ -72,7 +73,7 @@ function CreateStoryboardContent() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [jobId, setJobId] = useState<string | null>(null)
   const [jobProgress, setJobProgress] = useState(0)
-  const [jobStatus, setJobStatus] = useState<"pending" | "processing" | "completed" | "failed" | null>(null)
+  const [jobStatus, setJobStatus] = useState<JobStatus | null>(null)
   const [jobStage, setJobStage] = useState("Connecting to AI Director...")
   const [jobError, setJobError] = useState<string | null>(null)
   const [createdStoryboardId, setCreatedStoryboardId] = useState<string | null>(null)
@@ -93,7 +94,7 @@ function CreateStoryboardContent() {
     }
 
     setIsGenerating(true)
-    setJobStatus("pending")
+    setJobStatus("queued")
     setJobProgress(15)
     setJobError(null)
     setJobStage("Analyzing video concept & crafting viral hook...")
@@ -112,7 +113,7 @@ function CreateStoryboardContent() {
 
       setJobId(response.job_id)
       setCreatedStoryboardId(response.storyboard_id)
-      setJobStatus("pending")
+      setJobStatus("queued")
       setJobStage("Structuring scene timeline & camera directions...")
     } catch (error: any) {
       console.error("Failed to start generation:", error)
@@ -133,7 +134,7 @@ function CreateStoryboardContent() {
         const job = await storyboardService.getJobStatus(jobId)
         setJobStatus(job.status as any)
 
-        if (job.status === "processing") {
+        if (job.status === "running") {
           setJobProgress((prev) => Math.min(prev + 15, 85))
           if (job.stage) {
             setJobStage(job.stage)
@@ -155,7 +156,7 @@ function CreateStoryboardContent() {
               router.push("/dashboard/storyboards")
             }
           }, 800)
-        } else if (job.status === "failed") {
+        } else if (job.status === "failed" || job.status === "cancelled") {
           setJobError(job.error_message || "Generation failed. Please try again.")
           setIsGenerating(false)
           toast.error("Generation failed.")
