@@ -12,10 +12,10 @@ import { Button } from "@/components/ui/button";
 import { HiFire as Flame, HiEye as Eye, HiEyeSlash as EyeOff, HiExclamationCircle as AlertCircle, HiCheck as Check } from "react-icons/hi2";
 import { signUpSchema, SignUpValues } from "@/schemas/authSchema";
 import { authService } from "@/services/authService";
-import { apiErrorMessage } from "@/lib/apiErrors";
+import { apiErrorMessage, fieldErrors } from "@/lib/apiErrors";
 
 const perks = [
-  "3 free storyboard generations daily",
+  "Free credits to try it out",
   "AI scene & script generation",
   "Visual 9:16 canvas workspace",
 ];
@@ -29,6 +29,7 @@ export default function SignUpForm() {
   const {
     register,
     handleSubmit,
+    setError: setFieldError,
     formState: { errors, isSubmitting },
   } = useForm<SignUpValues>({
     resolver: zodResolver(signUpSchema),
@@ -44,7 +45,12 @@ export default function SignUpForm() {
       });
       router.push('/sign-in?registered=true');
     } catch (err) {
-      setError(apiErrorMessage(err, "Registration failed. Please try again."));
+      // Show the API's field errors (e.g. "too common") under the right field.
+      const fields = fieldErrors(err);
+      for (const name of ["username", "email", "password"] as const) {
+        if (fields[name]) setFieldError(name, { message: fields[name] });
+      }
+      if (!Object.keys(fields).length) setError(apiErrorMessage(err, "Registration failed. Please try again."));
     }
   };
 
@@ -108,10 +114,11 @@ export default function SignUpForm() {
             <AnimatePresence>
               {error && (
                 <motion.div
+                  role="alert"
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="flex items-start gap-3 p-4 rounded-2xl bg-red-50 border border-red-200/60 text-sm text-red-600 font-medium"
+                  className="flex items-start gap-3 p-4 rounded-2xl bg-red-50 border border-red-200/60 text-sm text-red-700 font-medium"
                 >
                   <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                   {error}

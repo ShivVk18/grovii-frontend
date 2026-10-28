@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -27,10 +27,16 @@ import {
 } from "react-icons/hi2";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { authService } from "@/services/authService";
+import { apiErrorMessage, fieldErrors } from "@/lib/apiErrors";
+import { passwordProblem, USERNAME_MESSAGE, USERNAME_RE } from "@/lib/passwordRules";
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(6, "New password must be at least 6 characters"),
+  newPassword: z.string().superRefine((v, ctx) => {
+    const problem = passwordProblem(v)
+    if (problem) ctx.addIssue({ code: "custom", message: problem })
+  }),
   confirmPassword: z.string().min(1, "Please confirm your password")
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "Passwords do not match",
@@ -40,12 +46,12 @@ const passwordSchema = z.object({
 type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 const profileSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z.string().trim().regex(USERNAME_RE, USERNAME_MESSAGE),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-const container = {
+const container: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -53,18 +59,20 @@ const container = {
       staggerChildren: 0.1
     }
   }
-} as any;
+};
 
-const itemVariant = {
+const itemVariant: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
-} as any;
+};
 
 export default function SettingsPage() {
-  const { user, logout } = useAuth();
+  const { user, logout, refresh } = useAuth();
   const [isDeleting, setIsDeleting] = useState(false);
-  const [confirmDeleteText, setConfirmDeleteText] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isDeletingLoading, setIsDeletingLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [isThemeDark, setIsThemeDark] = useState(false);
 
   useEffect(() => {
@@ -88,6 +96,7 @@ export default function SettingsPage() {
   const {
     register: registerProfile,
     handleSubmit: handleProfileSubmit,
+    setError: setProfileError,
     formState: { errors: profileErrors, isSubmitting: isProfileSubmitting },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -100,45 +109,70 @@ export default function SettingsPage() {
     register: registerPassword,
     handleSubmit: handlePasswordSubmit,
     formState: { errors: passwordErrors, isSubmitting: isPasswordSubmitting },
+    setError: setPasswordError,
     reset: resetPasswordForm
   } = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema)
   });
 
+  // These used to fake success with a timer; they now call the API (Phase F).
   const onProfileUpdate = async (data: ProfileFormValues) => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      toast.success("Profile username updated successfully!");
-    } catch (err: any) {
-      toast.error("Failed to update profile name.");
+      await authService.updateUsername(data.username.trim());
+      await refresh();
+      toast.success("Profile updated.");
+    } catch (err) {
+      setProfileError("username", { message: fieldErrors(err).username || apiErrorMessage(err, "Couldn't save your profile.") });
     }
   };
 
   const onPasswordUpdate = async (data: PasswordFormValues) => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      toast.success("Password updated successfully!");
+      await authService.changePassword(data.currentPassword, data.newPassword);
+      toast.success("Password changed. Other devices were signed out.");
       resetPasswordForm();
-    } catch (err: any) {
-      toast.error("Failed to update password.");
+    } catch (err) {
+      const fields = fieldErrors(err);
+      if (fields.new_password) setPasswordError("newPassword", { message: fields.new_password });
+      else if ((err as { response?: { data?: { code?: string } } }).response?.data?.code === "wrong_password")
+        setPasswordError("currentPassword", { message: apiErrorMessage(err) });
+      else toast.error(apiErrorMessage(err, "Couldn't change your password."));
+    }
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      await authService.exportMyData();
+      toast.success("Your data was downloaded.");
+    } catch (err) {
+      toast.error(apiErrorMessage(err, "Couldn't download your data."));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleLogoutEverywhere = async () => {
+    try {
+      await authService.logoutEverywhere();
+    } finally {
+      window.location.href = "/sign-in";
     }
   };
 
   const handleDeleteAccount = async () => {
-    if (confirmDeleteText !== "DELETE") {
-      toast.error("Please type DELETE to confirm");
+    if (!deletePassword) {
+      setDeleteError("Enter your password to confirm.");
       return;
     }
+    setDeleteError(null);
     setIsDeletingLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      toast.success("Account deleted. Logging out...");
-      setIsDeleting(false);
-      logout();
-    } catch (error) {
-      toast.error("Failed to delete account");
+      await authService.deleteAccount(deletePassword);
+      toast.success("Your account and all your data were deleted.");
+      window.location.href = "/sign-in";
+    } catch (err) {
+      setDeleteError(apiErrorMessage(err, "Couldn't delete your account. Nothing was deleted."));
     } finally {
       setIsDeletingLoading(false);
     }
@@ -152,7 +186,7 @@ export default function SettingsPage() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-8 max-w-4xl font-sans select-none mx-auto pb-16 px-4 sm:px-6"
+      className="space-y-8 max-w-4xl font-sans mx-auto pb-16 px-4 sm:px-6"
     >
       
       <motion.div variants={itemVariant} className="text-left">
@@ -176,8 +210,9 @@ export default function SettingsPage() {
         <form onSubmit={handleProfileSubmit(onProfileUpdate)} className="space-y-6 pt-6 relative z-10">
           <div className="grid sm:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="text-sm font-bold text-foreground">Creator Handle / Name</Label>
+              <Label htmlFor="settings-username" className="text-sm font-bold text-foreground">Username</Label>
               <Input 
+                id="settings-username"
                 {...registerProfile("username")}
                 className={`rounded-xl border-border bg-background focus:ring-primary/20 text-sm h-11 ${profileErrors.username ? 'border-destructive' : ''}`}
               />
@@ -187,9 +222,10 @@ export default function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-bold text-foreground">Primary Email Address</Label>
+              <Label htmlFor="settings-email" className="text-sm font-bold text-foreground">Email address</Label>
               <Input 
-                defaultValue={user?.email || "shiv@example.com"} 
+                id="settings-email"
+                defaultValue={user?.email || ""} 
                 disabled 
                 className="rounded-xl border-border bg-muted/50 text-muted-foreground text-sm h-11 cursor-not-allowed"
               />
@@ -197,7 +233,7 @@ export default function SettingsPage() {
           </div>
 
           <Button type="submit" disabled={isProfileSubmitting} className="rounded-full font-bold text-sm px-8 py-5 h-11 shadow-sm transition">
-            {isProfileSubmitting ? "Saving..." : "Save Profile Details"}
+            {isProfileSubmitting ? "Saving..." : "Save profile"}
           </Button>
         </form>
       </motion.div>
@@ -218,8 +254,10 @@ export default function SettingsPage() {
         <form onSubmit={handlePasswordSubmit(onPasswordUpdate)} className="space-y-5 pt-6 relative z-10">
           <div className="grid sm:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <Label className="text-sm font-bold text-foreground">Current Password</Label>
+              <Label htmlFor="current-password" className="text-sm font-bold text-foreground">Current password</Label>
               <Input 
+                id="current-password"
+                autoComplete="current-password"
                 type="password"
                 placeholder="••••••••"
                 {...registerPassword("currentPassword")}
@@ -231,8 +269,10 @@ export default function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-bold text-foreground">New Password</Label>
+              <Label htmlFor="new-password" className="text-sm font-bold text-foreground">New password</Label>
               <Input 
+                id="new-password"
+                autoComplete="new-password"
                 type="password"
                 placeholder="••••••••"
                 {...registerPassword("newPassword")}
@@ -244,8 +284,10 @@ export default function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-bold text-foreground">Confirm New Password</Label>
+              <Label htmlFor="confirm-new-password" className="text-sm font-bold text-foreground">Confirm new password</Label>
               <Input 
+                id="confirm-new-password"
+                autoComplete="new-password"
                 type="password"
                 placeholder="••••••••"
                 {...registerPassword("confirmPassword")}
@@ -375,10 +417,18 @@ export default function SettingsPage() {
             <p className="text-xs text-muted-foreground mt-0.5 font-medium">End your active studio session and return to the sign-in screen</p>
           </div>
 
+          <div className="flex flex-wrap gap-2">
           <Button 
             variant="outline" 
-            onClick={() => {
-              logout();
+            onClick={handleLogoutEverywhere}
+            className="rounded-full border-border font-bold text-xs px-6 py-5 h-11 shadow-sm transition"
+          >
+            Sign out everywhere
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={async () => {
+              await logout();
               toast.success("Logged out successfully");
               window.location.href = "/sign-in";
             }}
@@ -386,6 +436,24 @@ export default function SettingsPage() {
           >
             <LogoutIcon className="h-4 w-4" />
             Log Out
+          </Button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Your data (export) */}
+      <motion.div variants={itemVariant} className="glass-panel rounded-3xl border border-border p-6 sm:p-8 bg-card relative overflow-hidden text-left">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-6">
+          <div>
+            <h2 className="text-lg font-bold text-foreground">Your data</h2>
+            <p className="text-xs text-muted-foreground font-medium mt-1 max-w-md">
+              Download everything Grovii stores about you: your account, every storyboard with its scenes, captions,
+              music and posts, and your generation history.
+            </p>
+          </div>
+          <Button variant="outline" onClick={handleExport} disabled={isExporting}
+            className="rounded-full border-border font-bold text-xs px-6 py-5 h-11 shadow-sm transition">
+            {isExporting ? "Preparing…" : "Download my data"}
           </Button>
         </div>
       </motion.div>
@@ -404,7 +472,7 @@ export default function SettingsPage() {
 
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-6 pt-6">
           <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
-            Permanently delete your personal workspace, script histories, and active storyboards. This action cannot be undone.
+            Permanently delete your account and everything in it. This can&apos;t be undone.
           </p>
 
           <Button 
@@ -417,63 +485,81 @@ export default function SettingsPage() {
         </div>
       </motion.div>
 
-      {/* Delete Account Modal Dialog Overlay */}
+      {/* Delete Account dialog: needs the password (the API re-checks it) */}
       <AnimatePresence>
         {isDeleting && (
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
             <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-title"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
+              onKeyDown={(e) => { if (e.key === "Escape" && !isDeletingLoading) { setIsDeleting(false); setDeletePassword(""); setDeleteError(null); } }}
               className="bg-card border border-border shadow-2xl rounded-3xl max-w-md w-full p-8 space-y-6 text-left relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-destructive/5 rounded-full blur-2xl pointer-events-none"></div>
-              
               <div className="flex items-center gap-3 text-destructive">
                 <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
-                  <Trash2 className="h-5 w-5" />
+                  <Trash2 className="h-5 w-5" aria-hidden />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold">Delete Account permanently</h3>
-                  <p className="text-xs text-destructive/70 font-medium">This action is irreversible</p>
+                  <h3 id="delete-title" className="text-lg font-bold">Delete your account</h3>
+                  <p className="text-xs text-destructive font-medium">This can&apos;t be undone</p>
                 </div>
               </div>
 
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                All generated scenes, captions, hashtags, music presets, and credit limits will be purged from the database. Type <strong className="text-foreground">DELETE</strong> below to verify.
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Your account, every storyboard, scene, caption, music idea and post, and your generation history will be
+                permanently deleted. Want a copy first? Use <strong className="text-foreground">Download my data</strong>.
               </p>
 
-              <div className="space-y-2">
-                <Input
-                  value={confirmDeleteText}
-                  onChange={(e) => setConfirmDeleteText(e.target.value)}
-                  placeholder="Type DELETE here..."
-                  className="rounded-xl border-border bg-background focus:ring-destructive/20 text-sm h-11"
-                />
-              </div>
+              <form
+                className="space-y-4"
+                onSubmit={(e) => { e.preventDefault(); void handleDeleteAccount(); }}
+              >
+                <div className="space-y-2">
+                  <Label htmlFor="delete-password" className="text-sm font-bold text-foreground">Your password</Label>
+                  <Input
+                    id="delete-password"
+                    type="password"
+                    autoComplete="current-password"
+                    autoFocus
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    aria-invalid={!!deleteError}
+                    aria-describedby={deleteError ? "delete-error" : undefined}
+                    className="rounded-xl border-border bg-background focus:ring-destructive/20 text-sm h-11"
+                  />
+                  {deleteError && (
+                    <p id="delete-error" role="alert" className="text-xs text-destructive font-semibold">{deleteError}</p>
+                  )}
+                </div>
 
-              <div className="flex gap-3 pt-2">
-                <Button 
-                  variant="outline" 
-                  disabled={isDeletingLoading}
-                  onClick={() => { setIsDeleting(false); setConfirmDeleteText(""); }}
-                  className="flex-1 rounded-full font-bold text-xs py-5"
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  variant="destructive"
-                  disabled={confirmDeleteText !== "DELETE" || isDeletingLoading}
-                  onClick={handleDeleteAccount}
-                  className="flex-1 rounded-full font-bold text-xs py-5"
-                >
-                  {isDeletingLoading ? (
-                    <span className="flex items-center gap-1.5 justify-center">
-                      <Loader2 className="w-4.5 h-4.5 animate-spin" /> Purging...
-                    </span>
-                  ) : "Confirm Delete"}
-                </Button>
-              </div>
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isDeletingLoading}
+                    onClick={() => { setIsDeleting(false); setDeletePassword(""); setDeleteError(null); }}
+                    className="flex-1 rounded-full font-bold text-xs py-5"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="destructive"
+                    disabled={!deletePassword || isDeletingLoading}
+                    className="flex-1 rounded-full font-bold text-xs py-5"
+                  >
+                    {isDeletingLoading ? (
+                      <span className="flex items-center gap-1.5 justify-center">
+                        <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> Deleting…
+                      </span>
+                    ) : "Delete my account"}
+                  </Button>
+                </div>
+              </form>
             </motion.div>
           </div>
         )}
