@@ -1,0 +1,44 @@
+name: frontend-ci
+
+# Type check, static regression checks, browser tests (mocked API; includes the
+# Phase F security tests: cookie session, CSRF header, security headers,
+# settings actions), and a dependency audit that fails on known vulnerabilities.
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  schedule:
+    - cron: "23 6 * * 1"   # weekly: new advisories appear without code changes
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "26"
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run test:regressions
+      - run: npx playwright install --with-deps chromium
+      - name: Browser tests (dev server)
+        run: npx playwright test
+      - name: Browser tests (production build)
+        run: npx next build && E2E_PROD=1 E2E_PORT=3200 npx playwright test
+
+  audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "26"
+      - name: npm audit (fails on any known vulnerability)
+        run: npm audit --audit-level=low
